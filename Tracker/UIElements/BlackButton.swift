@@ -22,4 +22,3 @@ final class BlackButton: UIButton {
         translatesAutoresizingMaskIntoConstraints = false
     }
 }
-

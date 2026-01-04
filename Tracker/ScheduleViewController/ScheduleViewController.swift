@@ -70,7 +70,7 @@ final class ScheduleViewController: UIViewController {
     }
 
     @objc private func doneTapped() {
-        print("🔹 onDone selectedDays перед dismiss: \(selectedDays)") 
+        print("🔹 onDone selectedDays перед dismiss: \(selectedDays)")
 
         onDone?(selectedDays)
         dismiss(animated: true)
