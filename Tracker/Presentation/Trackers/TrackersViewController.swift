@@ -1,6 +1,6 @@
 import UIKit
 
-final class TrackersViewController: UIViewController {
+final class TrackersViewController: UIViewController, TrackerStoreDelegate, TrackerCategoryStoreDelegate {
     
     // MARK: - Stores
     private let categoryStore: TrackerCategoryStore
@@ -28,6 +28,7 @@ final class TrackersViewController: UIViewController {
         self.trackerStore = TrackerStore(context: container.viewContext)
         super.init(nibName: nil, bundle: nil)
         self.trackerStore.delegate = self
+        self.categoryStore.delegate = self
     }
     
     required init?(coder: NSCoder) {
@@ -37,6 +38,7 @@ final class TrackersViewController: UIViewController {
         self.trackerStore = TrackerStore(context: container.viewContext)
         super.init(coder: coder)
         self.trackerStore.delegate = self
+        self.categoryStore.delegate = self
     }
     
     // MARK: - Add New Tracker
@@ -274,10 +276,9 @@ final class TrackersViewController: UIViewController {
         self.allTrackers = trackers
         applyCurrentDateFilter()
     }
-    
+
     // MARK: - TrackerCategoryStoreDelegate
-    extension TrackersViewController: TrackerCategoryStoreDelegate {
-        func didUpdateCategories() {
-            collectionView.reloadData()
-        }
+    func didUpdateCategories() {
+        collectionView.reloadData()
     }
+}

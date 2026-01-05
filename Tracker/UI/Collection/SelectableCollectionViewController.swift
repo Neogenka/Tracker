@@ -88,10 +88,13 @@ extension SelectableCollectionViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView,
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(
+        guard let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: SelectableCell.reuseId,
             for: indexPath
-        ) as! SelectableCell
+        ) as? SelectableCell else {
+            assertionFailure("Expected SelectableCell for reuseIdentifier: \(SelectableCell.reuseId)")
+            return UICollectionViewCell()
+        }
         
         let isSelected = indexPath == selectedIndexPath
         cell.configure(with: items[indexPath.item], isSelected: isSelected)
@@ -101,11 +104,14 @@ extension SelectableCollectionViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView,
                         viewForSupplementaryElementOfKind kind: String,
                         at indexPath: IndexPath) -> UICollectionReusableView {
-        let header = collectionView.dequeueReusableSupplementaryView(
+        guard let header = collectionView.dequeueReusableSupplementaryView(
             ofKind: kind,
             withReuseIdentifier: HeaderView.reuseId,
             for: indexPath
-        ) as! HeaderView
+        ) as? HeaderView else {
+            assertionFailure("Expected HeaderView for reuseIdentifier: \(HeaderView.reuseId)")
+            return UICollectionReusableView()
+        }
         header.titleLabel.text = headerTitle
         return header
     }

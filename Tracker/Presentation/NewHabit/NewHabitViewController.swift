@@ -174,7 +174,10 @@ extension NewHabitViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { 2 }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! ContainerTableViewCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? ContainerTableViewCell else {
+            assertionFailure("Expected ContainerTableViewCell for identifier 'cell")
+            return UITableViewCell()
+        }
         cell.textLabel?.text = indexPath.row == 0 ? "Категория" : "Расписание"
         cell.accessoryType = .disclosureIndicator
         cell.isLastCell = indexPath.row == tableView.numberOfRows(inSection: indexPath.section) - 1
