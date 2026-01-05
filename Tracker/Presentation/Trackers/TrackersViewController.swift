@@ -241,20 +241,20 @@ final class TrackersViewController: UIViewController {
         }
         return recordStore.isCompleted(for: trackerCoreData, date: date)
     }
-
-// MARK: - Filtering
+    
+    // MARK: - Filtering
     private func applyCurrentDateFilter() {
         let selectedWeekday = weekDay(for: currentDate)
-
+        
         trackers = allTrackers.filter { tracker in
             // Иррегулярные события (без расписания) показываем всегда
             tracker.schedule.isEmpty || tracker.schedule.contains(selectedWeekday)
         }
-
+        
         collectionView.reloadData()
         updatePlaceholder()
     }
-
+    
     private func weekDay(for date: Date) -> WeekDay {
         // Calendar weekday: 1=Sunday ... 7=Saturday
         switch Calendar.current.component(.weekday, from: date) {
@@ -268,16 +268,16 @@ final class TrackersViewController: UIViewController {
         }
     }
     
-// MARK: - TrackerStoreDelegate
+    // MARK: - TrackerStoreDelegate
     func didUpdateTrackers(_ trackers: [Tracker]) {
         print("🔄 Обновлено \(trackers.count) трекеров из Core Data")
         self.allTrackers = trackers
         applyCurrentDateFilter()
     }
-
-// MARK: - TrackerCategoryStoreDelegate
-extension TrackersViewController: TrackerCategoryStoreDelegate {
-    func didUpdateCategories() {
-        collectionView.reloadData()
+    
+    // MARK: - TrackerCategoryStoreDelegate
+    extension TrackersViewController: TrackerCategoryStoreDelegate {
+        func didUpdateCategories() {
+            collectionView.reloadData()
+        }
     }
-}
