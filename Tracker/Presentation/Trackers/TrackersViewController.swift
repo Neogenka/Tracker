@@ -89,39 +89,15 @@ final class TrackersViewController: UIViewController {
         setupPlaceholder()
         
         datePicker.date = currentDate
-        updateDateText()
+        applyCurrentDateFilter()
         
         ensureDefaultCategory()
         updatePlaceholder()
-        
-        categoryStore.delegate = self
-        
-        collectionView.reloadData()
         
         print("✅ TrackersViewController загружен")
     }
     
     // MARK: - UI Elements для Date.swift и Layout.swift
-    lazy var dateTextField: UITextField = {
-        let tf = UITextField()
-        tf.borderStyle = .roundedRect
-        tf.font = AppFonts.caption
-        tf.textAlignment = .center
-        tf.translatesAutoresizingMaskIntoConstraints = false
-        tf.inputView = datePicker
-        tf.tintColor = .clear
-        return tf
-    }()
-    
-    lazy var titleStack: UIStackView = {
-        let stack = UIStackView(arrangedSubviews: [titleLabel, dateTextField])
-        stack.axis = .horizontal
-        stack.spacing = 8
-        stack.alignment = .center
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        return stack
-    }()
-    
     let searchBar: UISearchBar = {
         let sb = UISearchBar()
         sb.placeholder = "Поиск"
@@ -212,8 +188,7 @@ final class TrackersViewController: UIViewController {
     }()
     
     private lazy var datePickerBarButtonItem: UIBarButtonItem = {
-        datePicker.sizeToFit()
-        return UIBarButtonItem(customView: datePicker)
+        UIBarButtonItem(customView: datePicker)
     }()
     
     // MARK: - Actions
@@ -294,13 +269,11 @@ final class TrackersViewController: UIViewController {
     }
     
 // MARK: - TrackerStoreDelegate
-extension TrackersViewController: TrackerStoreDelegate {
     func didUpdateTrackers(_ trackers: [Tracker]) {
         print("🔄 Обновлено \(trackers.count) трекеров из Core Data")
         self.allTrackers = trackers
         applyCurrentDateFilter()
     }
-}
 
 // MARK: - TrackerCategoryStoreDelegate
 extension TrackersViewController: TrackerCategoryStoreDelegate {

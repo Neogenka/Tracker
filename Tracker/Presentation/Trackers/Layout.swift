@@ -1,4 +1,5 @@
 import UIKit
+
 extension TrackersViewController {
     func setupLayout() {
         view.addSubview(titleLabel)
@@ -11,9 +12,9 @@ extension TrackersViewController {
 
         NSLayoutConstraint.activate([
             // Заголовок + дата
-            titleStack.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
-            titleStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            titleStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
             // Поиск
             searchBar.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
