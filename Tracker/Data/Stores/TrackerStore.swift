@@ -44,17 +44,6 @@ final class TrackerStore: NSObject {
         return cdTrackers.compactMap { $0.toTracker() }
     }
     
-    func add(_ tracker: Tracker) {
-        let cdTracker = TrackerCoreData(context: context)
-        cdTracker.id = tracker.id
-        cdTracker.name = tracker.name
-        cdTracker.color = tracker.color
-        cdTracker.emoji = tracker.emoji
-        cdTracker.schedule = tracker.schedule as NSObject
-        
-        saveContext()
-    }
-    
     func delete(_ tracker: Tracker) {
         let request: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", tracker.id as CVarArg)

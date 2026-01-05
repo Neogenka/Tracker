@@ -59,12 +59,8 @@ final class TrackerCategoryStore: NSObject {
         do {
             let cdCategory = try context.fetch(request).first ?? createCategory(title: categoryTitle)
 
-            let cdTracker = TrackerCoreData(context: context)
-            cdTracker.id = tracker.id
-            cdTracker.name = tracker.name
-            cdTracker.color = tracker.color
-            cdTracker.emoji = tracker.emoji
-            cdTracker.schedule = tracker.schedule as NSObject
+            let cdTracker = try fetchTrackerCoreData(with: tracker.id) ?? TrackerCoreData(context: context)
+            apply(tracker, to: cdTracker)
 
             var trackers = cdCategory.trackers as? Set<TrackerCoreData> ?? []
             trackers.insert(cdTracker)
@@ -93,6 +89,21 @@ final class TrackerCategoryStore: NSObject {
             sectionNameKeyPath: nil,
             cacheName: nil
         )
+    }
+    
+    private func fetchTrackerCoreData(with id: UUID) throws -> TrackerCoreData? {
+        let request: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        request.fetchLimit = 1
+        return try context.fetch(request).first
+    }
+    
+    private func apply(_ tracker: Tracker, to cdTracker: TrackerCoreData) {
+        cdTracker.id = tracker.id
+        cdTracker.name = tracker.name
+        cdTracker.color = tracker.color
+        cdTracker.emoji = tracker.emoji
+        cdTracker.schedule = tracker.schedule as NSObject
     }
 
     private func performFetch() {

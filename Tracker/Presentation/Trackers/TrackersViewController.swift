@@ -10,13 +10,13 @@ final class TrackersViewController: UIViewController {
     // MARK: - State
     private let defaultCategoryTitle = "Мои трекеры"
     private(set) var trackers: [Tracker] = []
+    private var allTrackers: [Tracker] = []
     
     var currentDate: Date = Date() {
         didSet {
             print("📅 Выбрана новая дата: \(currentDate)")
-            updateDateText()
-            collectionView.reloadData()
-            updatePlaceholder()
+            datePicker.setDate(currentDate, animated: true)
+            applyCurrentDateFilter()
         }
     }
     
@@ -29,7 +29,7 @@ final class TrackersViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
         self.trackerStore.delegate = self
     }
-
+    
     required init?(coder: NSCoder) {
         let container = CoreDataStack.shared.persistentContainer
         self.categoryStore = TrackerCategoryStore(context: container.viewContext)
@@ -42,10 +42,7 @@ final class TrackersViewController: UIViewController {
     // MARK: - Add New Tracker
     func addTrackerToDefaultCategory(_ tracker: Tracker) {
         categoryStore.addTracker(tracker, to: defaultCategoryTitle)
-        trackerStore.add(tracker)
-        
         updateCurrentDateForNewTracker(tracker)
-        print("📌 Трекер '\(tracker.name)' добавлен в категорию '\(defaultCategoryTitle)'")
     }
     
     // MARK: - Update currentDate for new tracker
@@ -85,6 +82,7 @@ final class TrackersViewController: UIViewController {
         view.backgroundColor = AppColors.background
         
         navigationItem.leftBarButtonItem = addButtonItem
+        navigationItem.rightBarButtonItem = datePickerBarButtonItem
         navigationItem.title = ""
         
         setupLayout()
@@ -213,6 +211,11 @@ final class TrackersViewController: UIViewController {
         return UIBarButtonItem(customView: button)
     }()
     
+    private lazy var datePickerBarButtonItem: UIBarButtonItem = {
+        datePicker.sizeToFit()
+        return UIBarButtonItem(customView: datePicker)
+    }()
+    
     // MARK: - Actions
     @objc func addButtonTapped() {
         let createTrackerVC = CreateTrackerViewController()
@@ -263,16 +266,39 @@ final class TrackersViewController: UIViewController {
         }
         return recordStore.isCompleted(for: trackerCoreData, date: date)
     }
-    
-}
 
+// MARK: - Filtering
+    private func applyCurrentDateFilter() {
+        let selectedWeekday = weekDay(for: currentDate)
+
+        trackers = allTrackers.filter { tracker in
+            // Иррегулярные события (без расписания) показываем всегда
+            tracker.schedule.isEmpty || tracker.schedule.contains(selectedWeekday)
+        }
+
+        collectionView.reloadData()
+        updatePlaceholder()
+    }
+
+    private func weekDay(for date: Date) -> WeekDay {
+        // Calendar weekday: 1=Sunday ... 7=Saturday
+        switch Calendar.current.component(.weekday, from: date) {
+        case 2: return .monday
+        case 3: return .tuesday
+        case 4: return .wednesday
+        case 5: return .thursday
+        case 6: return .friday
+        case 7: return .saturday
+        default: return .sunday
+        }
+    }
+    
 // MARK: - TrackerStoreDelegate
 extension TrackersViewController: TrackerStoreDelegate {
     func didUpdateTrackers(_ trackers: [Tracker]) {
         print("🔄 Обновлено \(trackers.count) трекеров из Core Data")
-        self.trackers = trackers
-        collectionView.reloadData()
-        updatePlaceholder()
+        self.allTrackers = trackers
+        applyCurrentDateFilter()
     }
 }
 

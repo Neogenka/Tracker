@@ -123,9 +123,7 @@ final class NewHabitViewController: UIViewController, UITextFieldDelegate {
             
             // Фиксированные размеры элементов
             nameTextField.heightAnchor.constraint(equalToConstant: 75),
-            tableContainer.heightAnchor.constraint(equalToConstant: 150),
-            emojiCollectionVC.view.heightAnchor.constraint(equalToConstant: 300),
-            colorCollectionVC.view.heightAnchor.constraint(equalToConstant: 200)
+            tableContainer.heightAnchor.constraint(equalToConstant: 150)
         ])
     }
     

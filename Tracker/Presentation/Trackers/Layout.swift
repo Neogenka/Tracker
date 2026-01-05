@@ -1,7 +1,7 @@
 import UIKit
 extension TrackersViewController {
     func setupLayout() {
-        view.addSubview(titleStack)
+        view.addSubview(titleLabel)
         view.addSubview(searchBar)
         view.addSubview(collectionView)
 
@@ -16,7 +16,7 @@ extension TrackersViewController {
             titleStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
             // Поиск
-            searchBar.topAnchor.constraint(equalTo: titleStack.bottomAnchor, constant: 8),
+            searchBar.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
             searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
