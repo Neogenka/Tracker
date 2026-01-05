@@ -6,13 +6,8 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		984C19062F0AAB6E005FF730 /* Tracker.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 984C19042F0AAB6E005FF730 /* Tracker.xcdatamodeld */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXFileReference section */
 		984C17FA2EFC5A91005FF730 /* Tracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		984C19052F0AAB6E005FF730 /* Tracker.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Tracker.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -34,11 +29,6 @@
 			path = Tracker;
 			sourceTree = "<group>";
 		};
-		984C19082F0AAE09005FF730 /* CoreDataStack */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = CoreDataStack;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,8 +45,6 @@
 		984C17F12EFC5A91005FF730 = {
 			isa = PBXGroup;
 			children = (
-				984C19082F0AAE09005FF730 /* CoreDataStack */,
-				984C19042F0AAB6E005FF730 /* Tracker.xcdatamodeld */,
 				984C17FC2EFC5A91005FF730 /* Tracker */,
 				984C17FB2EFC5A91005FF730 /* Products */,
 			);
@@ -87,7 +75,6 @@
 			);
 			fileSystemSynchronizedGroups = (
 				984C17FC2EFC5A91005FF730 /* Tracker */,
-				984C19082F0AAE09005FF730 /* CoreDataStack */,
 			);
 			name = Tracker;
 			packageProductDependencies = (
@@ -145,7 +132,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				984C19062F0AAB6E005FF730 /* Tracker.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -361,19 +347,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCVersionGroup section */
-		984C19042F0AAB6E005FF730 /* Tracker.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				984C19052F0AAB6E005FF730 /* Tracker.xcdatamodel */,
-			);
-			currentVersion = 984C19052F0AAB6E005FF730 /* Tracker.xcdatamodel */;
-			path = Tracker.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-/* End XCVersionGroup section */
 	};
 	rootObject = 984C17F22EFC5A91005FF730 /* Project object */;
 }
