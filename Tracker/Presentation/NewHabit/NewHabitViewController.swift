@@ -175,10 +175,12 @@ extension NewHabitViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? ContainerTableViewCell else {
-            assertionFailure("Expected ContainerTableViewCell for identifier 'cell")
+            assertionFailure("Expected ContainerTableViewCell for reuseIdentifier: cell")
             return UITableViewCell()
         }
-        cell.textLabel?.text = indexPath.row == 0 ? "Категория" : "Расписание"
+        let title = indexPath.row == 0 ? "Категория" : "Расписание"
+        let subtitle = indexPath.row == 1 ? formattedSelectedDays() : nil
+        cell.configure(title: title, subtitle: subtitle)
         cell.accessoryType = .disclosureIndicator
         cell.isLastCell = indexPath.row == tableView.numberOfRows(inSection: indexPath.section) - 1
         return cell
@@ -190,11 +192,27 @@ extension NewHabitViewController: UITableViewDataSource, UITableViewDelegate {
             let scheduleVC = ScheduleViewController()
             scheduleVC.selectedDays = selectedDays
             scheduleVC.onDone = { [weak self] days in
-                self?.selectedDays = days
+                guard let self else { return }
+                self.selectedDays = days
+                self.tableContainer.tableView.reloadRows(at: [IndexPath(row: 1, section: 0)], with: .none)
             }
             present(scheduleVC, animated: true)
         }
     }
+
+    // MARK: - Schedule subtitle
+    private func formattedSelectedDays() -> String? {
+        guard !selectedDays.isEmpty else { return nil }
+
+        let ordered = selectedDays.sorted { $0.rawValue < $1.rawValue }
+
+        if ordered.count == WeekDay.allCases.count {
+            return "Каждый день"
+        }
+
+        return ordered.map(\.shortTitle).joined(separator: ", ")
+    }
+
 }
 
 extension UIColor {

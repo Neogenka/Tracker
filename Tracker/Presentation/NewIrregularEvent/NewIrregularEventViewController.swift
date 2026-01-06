@@ -166,8 +166,12 @@ extension NewIrregularEventViewController: UITableViewDataSource, UITableViewDel
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { 1 }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! ContainerTableViewCell
-        cell.textLabel?.text = "Категория"
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? ContainerTableViewCell else {
+            assertionFailure("Expected ContainerTableViewCell for reuseIdentifier: cell")
+            return UITableViewCell()
+        }
+
+        cell.configure(title: "Категория")
         cell.accessoryType = .disclosureIndicator
         cell.isLastCell = true
         return cell

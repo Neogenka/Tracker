@@ -90,9 +90,13 @@ extension ScheduleViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { daysOfWeek.count }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! ContainerTableViewCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? ContainerTableViewCell else {
+            assertionFailure("Expected ContainerTableViewCell for reuseIdentifier: cell")
+            return UITableViewCell()
+        }
+
         let item = daysOfWeek[indexPath.row]
-        cell.textLabel?.text = item.title
+        cell.configure(title: item.title)
         cell.isLastCell = indexPath.row == daysOfWeek.count - 1
 
         let toggle = UISwitch()
@@ -100,6 +104,7 @@ extension ScheduleViewController: UITableViewDataSource, UITableViewDelegate {
         toggle.isOn = selectedDays.contains(item.day)
         toggle.addTarget(self, action: #selector(toggleChanged(_:)), for: .valueChanged)
         cell.accessoryView = toggle
+
         return cell
     }
 
