@@ -88,6 +88,9 @@ final class NewIrregularEventViewController: UIViewController, UITextFieldDelega
         addChild(colorCollectionVC)
         colorCollectionVC.didMove(toParent: self)
         
+        let panelSafeBottom = bottomButtons.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        panelSafeBottom.priority = .init(998)
+        
         NSLayoutConstraint.activate([
             // Header
             modalHeader.topAnchor.constraint(equalTo: view.topAnchor),

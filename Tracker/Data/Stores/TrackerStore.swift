@@ -50,8 +50,8 @@ final class TrackerStore: NSObject {
         cdTracker.name = tracker.name
         cdTracker.color = tracker.color
         cdTracker.emoji = tracker.emoji
-        cdTracker.schedule = tracker.schedule as NSObject
-        cdTracker.trackerCategory = tracker.trackerCategory // <- напрямую
+        cdTracker.schedule = tracker.schedule.map(\.rawValue) as NSArray
+        cdTracker.category = tracker.trackerCategory
 
         saveContext()
     }
@@ -79,8 +79,8 @@ final class TrackerStore: NSObject {
                 cdTracker.name = tracker.name
                 cdTracker.color = tracker.color
                 cdTracker.emoji = tracker.emoji
-                cdTracker.schedule = tracker.schedule as NSObject
-                cdTracker.trackerCategory = tracker.trackerCategory
+                cdTracker.schedule = tracker.schedule.map(\.rawValue) as NSArray
+        cdTracker.category = tracker.trackerCategory
                 saveContext()
             }
         } catch {
@@ -118,29 +118,35 @@ private extension TrackerCoreData {
         guard let id = id,
               let name = name,
               let color = color,
-              let emoji = emoji,
-              let schedule = schedule else {
-            print("❌ toTracker guard failed for id: \(id?.uuidString ?? "nil")")
+              let emoji = emoji else {
             return nil
         }
 
-        print("DEBUG: raw trackerCategory property type: \(type(of: self.trackerCategory as Any))")
-        print("DEBUG: raw schedule property type: \(type(of: schedule))")
+        let scheduleArray: [WeekDay] = {
+            // Backward compatibility: old store might contain [WeekDay]
+            if let days = self.schedule as? [WeekDay] { return days }
 
-        // try cast schedule to expected type
-        let scheduleArray = schedule as? [WeekDay] ?? []
-        let category = trackerCategory as? TrackerCategoryCoreData
+            let rawInts: [Int]
+            if let ints = self.schedule as? [Int] {
+                rawInts = ints
+            } else if let numbers = self.schedule as? [NSNumber] {
+                rawInts = numbers.map { $0.intValue }
+            } else if let array = self.schedule as? NSArray {
+                rawInts = array.compactMap { ($0 as? NSNumber)?.intValue }
+            } else {
+                rawInts = []
+            }
 
-        let tracker = Tracker(
+            return rawInts.compactMap(WeekDay.init(rawValue:))
+        }()
+
+        return Tracker(
             id: id,
             name: name,
             color: color,
             emoji: emoji,
             schedule: scheduleArray,
-            trackerCategory: category
+            trackerCategory: self.category
         )
-
-        print("🟢 Mapped TrackerCoreData -> Tracker: \(tracker.name), category: \(category?.title ?? "nil")")
-        return tracker
     }
 }

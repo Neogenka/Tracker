@@ -81,7 +81,7 @@ final class TrackerCategoryStore: NSObject {
             cdTracker.name = tracker.name
             cdTracker.color = tracker.color
             cdTracker.emoji = tracker.emoji
-            cdTracker.schedule = tracker.schedule as NSObject
+            cdTracker.schedule = tracker.schedule.map(\.rawValue) as NSArray
 
             var trackersSet = cdCategory.trackers as? Set<TrackerCoreData> ?? []
             trackersSet.insert(cdTracker)
