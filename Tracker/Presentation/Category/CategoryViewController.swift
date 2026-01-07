@@ -136,7 +136,7 @@ extension CategoryViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! ContainerTableViewCell
         let category = categoryStore.fetchCategories()[indexPath.row]
-        cell.textLabel?.text = category.title
+        cell.configure(title: category.title ?? "", subtitle: nil)
         cell.isLastCell = indexPath.row == categoryStore.fetchCategories().count - 1
 
         configureCheckmark(for: cell, at: indexPath)
@@ -168,5 +168,3 @@ extension CategoryViewController: TrackerCategoryStoreDelegate {
         updateUI()
     }
 }
-
-

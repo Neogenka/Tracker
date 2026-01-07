@@ -92,7 +92,7 @@ extension ScheduleViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! ContainerTableViewCell
         let item = daysOfWeek[indexPath.row]
-        cell.textLabel?.text = item.title
+        cell.configure(title: item.title, subtitle: nil)
         cell.isLastCell = indexPath.row == daysOfWeek.count - 1
 
         let toggle = UISwitch()

@@ -2,62 +2,94 @@ import UIKit
 
 final class ContainerTableViewCell: UITableViewCell {
 
-    private let leftPadding: UIView = {
+    // MARK: - UI
+    private let leftPaddingView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
+    }()
+
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.font = AppFonts.body
+        label.textColor = .label
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+
+    private let subtitleLabel: UILabel = {
+        let label = UILabel()
+        label.font = AppFonts.caption
+        label.textColor = AppColors.textSecondary
+        label.numberOfLines = 1
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+
+    private let labelsStack: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.spacing = 2
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        return stack
     }()
 
     private let separatorLine: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = UIColor.systemGray4
-        view.layer.zPosition = 1 // separator всегда выше контента галочки
+        view.layer.zPosition = 1
         return view
     }()
 
+    // MARK: - State
     var isLastCell: Bool = false {
-        didSet {
-            separatorLine.isHidden = isLastCell
-        }
+        didSet { separatorLine.isHidden = isLastCell }
     }
 
+    // MARK: - Init
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setupStyle()
+        setupUI()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setupStyle() {
+    // MARK: - Public
+    func configure(title: String, subtitle: String?) {
+        titleLabel.text = title
+        let subtitle = subtitle?.trimmingCharacters(in: .whitespacesAndNewlines)
+        subtitleLabel.text = subtitle
+        subtitleLabel.isHidden = (subtitle?.isEmpty ?? true)
+    }
+
+    // MARK: - Private
+    private func setupUI() {
+        selectionStyle = .default
         backgroundColor = .systemGray6
         contentView.backgroundColor = .systemGray6
-        selectionStyle = .none
-        layoutMargins = .zero
-        separatorInset = .zero
 
-        contentView.addSubview(leftPadding)
-        NSLayoutConstraint.activate([
-            leftPadding.widthAnchor.constraint(equalToConstant: 20),
-            leftPadding.topAnchor.constraint(equalTo: contentView.topAnchor),
-            leftPadding.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            leftPadding.leadingAnchor.constraint(equalTo: contentView.leadingAnchor)
-        ])
+        labelsStack.addArrangedSubview(titleLabel)
+        labelsStack.addArrangedSubview(subtitleLabel)
 
-        if let label = textLabel {
-            label.translatesAutoresizingMaskIntoConstraints = false
-            NSLayoutConstraint.activate([
-                label.leadingAnchor.constraint(equalTo: leftPadding.trailingAnchor),
-                label.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
-                label.topAnchor.constraint(equalTo: contentView.topAnchor),
-                label.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
-            ])
-        }
-
+        contentView.addSubview(leftPaddingView)
+        contentView.addSubview(labelsStack)
         contentView.addSubview(separatorLine)
+
         NSLayoutConstraint.activate([
+            leftPaddingView.widthAnchor.constraint(equalToConstant: 20),
+            leftPaddingView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            leftPaddingView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            leftPaddingView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+
+            labelsStack.leadingAnchor.constraint(equalTo: leftPaddingView.trailingAnchor),
+            labelsStack.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -8),
+            labelsStack.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            labelsStack.topAnchor.constraint(greaterThanOrEqualTo: contentView.topAnchor, constant: 12),
+            labelsStack.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -12),
+
             separatorLine.heightAnchor.constraint(equalToConstant: 1),
             separatorLine.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             separatorLine.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),

@@ -20,6 +20,9 @@ final class NewCategoryView: UIView {
     // MARK: - Layout
     private func setupLayout() {
         [header, nameTextField, doneButton].forEach { addSubview($0) }
+        
+        let doneSafeBottom = doneButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -16)
+        doneSafeBottom.priority = .init(998)
 
         NSLayoutConstraint.activate([
             // Header сверху
@@ -36,9 +39,19 @@ final class NewCategoryView: UIView {
             // DoneButton внизу
             doneButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
             doneButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
-            doneButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -16),
+            doneSafeBottom,
             doneButton.heightAnchor.constraint(equalToConstant: 60)
         ])
+        
+        if #available(iOS 15.0, *) {
+            let clampToSafeArea = doneButton.bottomAnchor.constraint(lessThanOrEqualTo: safeAreaLayoutGuide.bottomAnchor, constant: -16)
+            clampToSafeArea.priority = .required
+
+            let doneKeyboardBottom = doneButton.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor, constant: -16)
+            doneKeyboardBottom.priority = .init(999)
+
+            NSLayoutConstraint.activate([clampToSafeArea, doneKeyboardBottom])
+        }
     }
 
     // MARK: - Initial State

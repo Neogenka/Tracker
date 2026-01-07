@@ -77,7 +77,10 @@ final class NewHabitViewController: UIViewController, UITextFieldDelegate {
         view.addSubview(modalHeader)
         view.addSubview(scrollView)
         view.addSubview(bottomButtons)
-        
+
+        let panelSafeBottom = bottomButtons.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        panelSafeBottom.priority = .init(998)
+
         // ScrollView содержит stackView
         scrollView.addSubview(contentStack)
         
@@ -105,7 +108,7 @@ final class NewHabitViewController: UIViewController, UITextFieldDelegate {
             
             bottomButtons.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomButtons.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bottomButtons.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            panelSafeBottom,
             
             scrollView.topAnchor.constraint(equalTo: modalHeader.bottomAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -120,11 +123,53 @@ final class NewHabitViewController: UIViewController, UITextFieldDelegate {
             
             nameTextField.heightAnchor.constraint(equalToConstant: 75),
             tableContainer.heightAnchor.constraint(equalToConstant: 150),
-            emojiCollectionVC.view.heightAnchor.constraint(equalToConstant: 300),
-            colorCollectionVC.view.heightAnchor.constraint(equalToConstant: 200)
+            emojiCollectionVC.view.heightAnchor.constraint(equalToConstant: collectionHeight(itemsCount: CollectionData.emojis.count)),
+            colorCollectionVC.view.heightAnchor.constraint(equalToConstant: collectionHeight(itemsCount: CollectionData.colors.count))
         ])
+        if #available(iOS 15.0, *) {
+            view.keyboardLayoutGuide.followsUndockedKeyboard = true
+        
+            let clampToSafeArea = bottomButtons.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor)
+            clampToSafeArea.priority = .required
+        
+            let panelKeyboardBottom = bottomButtons.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor)
+            panelKeyboardBottom.priority = .init(999)
+        
+            NSLayoutConstraint.activate([clampToSafeArea, panelKeyboardBottom])
+        }
+
     }
     
+
+
+
+
+
+
+
+
+
+
+
+    private func collectionHeight(itemsCount: Int, columns: Int = 6) -> CGFloat {
+        let rows = CGFloat((itemsCount + columns - 1) / columns)
+        let itemSize: CGFloat = 52
+        let lineSpacing: CGFloat = 5
+        let headerHeight: CGFloat = 44
+        return headerHeight + rows * itemSize + max(0, rows - 1) * lineSpacing
+    }
+
+    private func scheduleSummary(from days: [WeekDay]) -> String? {
+        guard !days.isEmpty else { return nil }
+
+        let uniqueSorted = Array(Set(days)).sorted { $0.rawValue < $1.rawValue }
+        if uniqueSorted.count == WeekDay.allCases.count {
+            return "Каждый день"
+        }
+
+        return uniqueSorted.map { $0.shortTitle }.joined(separator: ", ")
+    }
+
     // MARK: - Actions
     private func setupActions() {
         bottomButtons.cancelButton.addTarget(self, action: #selector(cancelTapped), for: .touchUpInside)
@@ -152,14 +197,23 @@ final class NewHabitViewController: UIViewController, UITextFieldDelegate {
             name: title,
             color: color.toHexString(),
             emoji: emoji,
-            schedule: [],
+            schedule: selectedDays,
             trackerCategory: selectedCategory
         )
         
         onHabitCreated?(tracker)
-        dismiss(animated: true)
+        dismissToRoot()
     }
     
+
+    private func dismissToRoot() {
+            var presenter = presentingViewController
+            while let next = presenter?.presentingViewController {
+                presenter = next
+            }
+            presenter?.dismiss(animated: true)
+    }
+
     // MARK: - UITextField
     func textFieldDidChangeSelection(_ textField: UITextField) {
         let hasText = !(textField.text?.trimmingCharacters(in: .whitespaces).isEmpty ?? true)
@@ -175,9 +229,9 @@ extension NewHabitViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! ContainerTableViewCell
         if indexPath.row == 0 {
-            cell.textLabel?.text = selectedCategory?.title ?? "Категория"
+            cell.configure(title: "Категория", subtitle: selectedCategory?.title)
         } else {
-            cell.textLabel?.text = "Расписание"
+            cell.configure(title: "Расписание", subtitle: scheduleSummary(from: selectedDays))
         }
         cell.accessoryType = .disclosureIndicator
         cell.isLastCell = indexPath.row == tableView.numberOfRows(inSection: indexPath.section) - 1
@@ -191,14 +245,14 @@ extension NewHabitViewController: UITableViewDataSource, UITableViewDelegate {
             // Переход к CategoryViewController
             let coreDataStack = CoreDataStack.shared
             let categoryStore = TrackerCategoryStore(context: coreDataStack.context)
-            let categoryVM = CategoryViewModel(store: categoryStore)
             let categoryVC = CategoryViewController(store: categoryStore)
-            
-            categoryVM.onCategorySelected = { [weak self] category in
+
+            categoryVC.onCategorySelected = { [weak self, weak categoryVC] category in
                 self?.selectedCategory = category
-                tableView.reloadRows(at: [indexPath], with: .automatic)
+                tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+                categoryVC?.dismiss(animated: true)
             }
-            
+
             present(categoryVC, animated: true)
         }
 
@@ -207,6 +261,7 @@ extension NewHabitViewController: UITableViewDataSource, UITableViewDelegate {
             scheduleVC.selectedDays = selectedDays
             scheduleVC.onDone = { [weak self] days in
                 self?.selectedDays = days
+                tableView.reloadRows(at: [IndexPath(row: 1, section: 0)], with: .automatic)
             }
             present(scheduleVC, animated: true)
         }

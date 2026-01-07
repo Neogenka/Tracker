@@ -98,7 +98,7 @@ final class NewIrregularEventViewController: UIViewController, UITextFieldDelega
             // Bottom buttons
             bottomButtons.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomButtons.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bottomButtons.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            panelSafeBottom,
             
             // ScrollView
             scrollView.topAnchor.constraint(equalTo: modalHeader.bottomAnchor),
@@ -116,11 +116,31 @@ final class NewIrregularEventViewController: UIViewController, UITextFieldDelega
             // Fixed heights
             nameTextField.heightAnchor.constraint(equalToConstant: 75),
             tableContainer.heightAnchor.constraint(equalToConstant: 75),
-            emojiCollectionVC.view.heightAnchor.constraint(equalToConstant: 300),
-            colorCollectionVC.view.heightAnchor.constraint(equalToConstant: 200)
+            emojiCollectionVC.view.heightAnchor.constraint(equalToConstant: collectionHeight(itemsCount: CollectionData.emojis.count)),
+            colorCollectionVC.view.heightAnchor.constraint(equalToConstant: collectionHeight(itemsCount: CollectionData.colors.count))
         ])
+        if #available(iOS 15.0, *) {
+            view.keyboardLayoutGuide.followsUndockedKeyboard = true
+        
+            let clampToSafeArea = bottomButtons.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor)
+            clampToSafeArea.priority = .required
+        
+            let panelKeyboardBottom = bottomButtons.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor)
+            panelKeyboardBottom.priority = .init(999)
+        
+            NSLayoutConstraint.activate([clampToSafeArea, panelKeyboardBottom])
+        }
+
     }
-    
+
+    private func collectionHeight(itemsCount: Int, columns: Int = 6) -> CGFloat {
+        let rows = CGFloat((itemsCount + columns - 1) / columns)
+        let itemSize: CGFloat = 52
+        let lineSpacing: CGFloat = 5
+        let headerHeight: CGFloat = 44
+        return headerHeight + rows * itemSize + max(0, rows - 1) * lineSpacing
+    }
+
     // MARK: - Actions
     private func setupActions() {
         bottomButtons.cancelButton.addTarget(self, action: #selector(cancelTapped), for: .touchUpInside)
@@ -153,9 +173,18 @@ final class NewIrregularEventViewController: UIViewController, UITextFieldDelega
 
         
         onEventCreated?(tracker)
-        dismiss(animated: true)
+        dismissToRoot()
     }
     
+
+    private func dismissToRoot() {
+            var presenter = presentingViewController
+            while let next = presenter?.presentingViewController {
+                presenter = next
+            }
+            presenter?.dismiss(animated: true)
+    }
+
     // MARK: - UITextField
     func textFieldDidChangeSelection(_ textField: UITextField) {
         let hasText = !(textField.text?.trimmingCharacters(in: .whitespaces).isEmpty ?? true)
@@ -170,7 +199,7 @@ extension NewIrregularEventViewController: UITableViewDataSource, UITableViewDel
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! ContainerTableViewCell
-        cell.textLabel?.text = selectedCategory?.title ?? "Категория"
+        cell.configure(title: "Категория", subtitle: selectedCategory?.title)
         cell.accessoryType = .disclosureIndicator
         cell.isLastCell = true
         return cell
@@ -182,14 +211,14 @@ extension NewIrregularEventViewController: UITableViewDataSource, UITableViewDel
         // Переход к CategoryViewController
         let coreDataStack = CoreDataStack.shared
         let categoryStore = TrackerCategoryStore(context: coreDataStack.context)
-        let categoryVM = CategoryViewModel(store: categoryStore)
         let categoryVC = CategoryViewController(store: categoryStore)
-        
-        categoryVM.onCategorySelected = { [weak self] category in
+
+        categoryVC.onCategorySelected = { [weak self, weak categoryVC] category in
             self?.selectedCategory = category
-            tableView.reloadRows(at: [indexPath], with: .automatic)
+            tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+            categoryVC?.dismiss(animated: true)
         }
-        
+
         present(categoryVC, animated: true)
     }
 }

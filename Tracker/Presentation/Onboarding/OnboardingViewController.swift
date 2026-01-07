@@ -72,11 +72,15 @@ final class OnboardingViewController: UIPageViewController, UIPageViewController
     // MARK: - Actions
     @objc private func finishOnboarding() {
         UserDefaults.standard.set(true, forKey: "hasSeenOnboarding")
-        
-        let trackersVC = TrackersViewController()
-        let navVC = UINavigationController(rootViewController: trackersVC)
-        if let window = UIApplication.shared.windows.first {
-            window.rootViewController = navVC
+
+        let mainTabBar = MainTabBarController()
+
+        if let window = UIApplication.shared.connectedScenes
+            .compactMap({ $0 as? UIWindowScene })
+            .flatMap({ $0.windows })
+            .first(where: { $0.isKeyWindow }) {
+
+            window.rootViewController = mainTabBar
             window.makeKeyAndVisible()
         }
     }

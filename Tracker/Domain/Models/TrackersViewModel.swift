@@ -55,8 +55,8 @@ final class TrackersViewModel {
 
     func addTrackerToDefaultCategory(_ tracker: Tracker) {
         print("🟢 Adding tracker: \(tracker.name)")
-        categoryStore.addTracker(tracker, to: defaultCategoryTitle)
-        trackerStore.add(tracker)
+        let categoryTitle = tracker.trackerCategory?.title ?? defaultCategoryTitle
+        categoryStore.addTracker(tracker, to: categoryTitle)
 
         // обновляем локальные массивы
         let updatedTrackers = trackerStore.getTrackers()
