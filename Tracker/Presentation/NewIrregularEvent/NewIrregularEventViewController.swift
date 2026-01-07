@@ -5,6 +5,7 @@ final class NewIrregularEventViewController: UIViewController, UITextFieldDelega
     // MARK: - UI
     private let scrollView = UIScrollView()
     private let contentStack = UIStackView()
+    private var selectedCategory: TrackerCategoryCoreData?
     
     private let modalHeader = ModalHeaderView(title: "Новое нерегулярное событие")
     private let nameTextField = AppTextField(placeholder: "Введите название трекера")
@@ -146,8 +147,10 @@ final class NewIrregularEventViewController: UIViewController, UITextFieldDelega
             name: title,
             color: color.toHexString(),
             emoji: emoji,
-            schedule: [] // для нерегулярного события всегда пусто
-        )
+            schedule: [],
+            trackerCategory: selectedCategory
+            )
+
         
         onEventCreated?(tracker)
         dismiss(animated: true)
@@ -166,12 +169,8 @@ extension NewIrregularEventViewController: UITableViewDataSource, UITableViewDel
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { 1 }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? ContainerTableViewCell else {
-            assertionFailure("Expected ContainerTableViewCell for reuseIdentifier: cell")
-            return UITableViewCell()
-        }
-
-        cell.configure(title: "Категория")
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! ContainerTableViewCell
+        cell.textLabel?.text = selectedCategory?.title ?? "Категория"
         cell.accessoryType = .disclosureIndicator
         cell.isLastCell = true
         return cell
@@ -179,6 +178,18 @@ extension NewIrregularEventViewController: UITableViewDataSource, UITableViewDel
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        print("Категория выбрана")
+        
+        // Переход к CategoryViewController
+        let coreDataStack = CoreDataStack.shared
+        let categoryStore = TrackerCategoryStore(context: coreDataStack.context)
+        let categoryVM = CategoryViewModel(store: categoryStore)
+        let categoryVC = CategoryViewController(store: categoryStore)
+        
+        categoryVM.onCategorySelected = { [weak self] category in
+            self?.selectedCategory = category
+            tableView.reloadRows(at: [indexPath], with: .automatic)
+        }
+        
+        present(categoryVC, animated: true)
     }
 }

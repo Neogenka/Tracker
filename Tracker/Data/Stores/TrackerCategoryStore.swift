@@ -7,30 +7,39 @@ protocol TrackerCategoryStoreDelegate: AnyObject {
 final class TrackerCategoryStore: NSObject {
 
     // MARK: - Properties
-
-    weak var delegate: TrackerCategoryStoreDelegate?
-
     private let context: NSManagedObjectContext
     private let fetchedResultsController: NSFetchedResultsController<TrackerCategoryCoreData>
+    weak var delegate: TrackerCategoryStoreDelegate?
 
-    // MARK: - Public access
-
-    var categories: [TrackerCategory] {
-        guard let objects = fetchedResultsController.fetchedObjects else { return [] }
-        return objects.compactMap { mapCategory(from: $0) }
-    }
+    private let mappingErrorMessage = "⚠️ Ошибка маппинга TrackerCategoryCoreData: отсутствует id или title"
 
     // MARK: - Init
-
     init(context: NSManagedObjectContext) {
         self.context = context
-        self.fetchedResultsController = TrackerCategoryStore.makeFetchedResultsController(context: context)
+        let request = TrackerCategoryStore.makeFetchRequest()
+
+        self.fetchedResultsController = NSFetchedResultsController(
+            fetchRequest: request,
+            managedObjectContext: context,
+            sectionNameKeyPath: nil,
+            cacheName: nil
+        )
+
         super.init()
-        fetchedResultsController.delegate = self
-        performFetch()
+        self.fetchedResultsController.delegate = self
+
+        do {
+            try self.fetchedResultsController.performFetch()
+        } catch {
+            print("❌ Ошибка performFetch категорий: \(error)")
+        }
     }
 
-    // MARK: - Public methods
+    // MARK: - Public API
+    var categories: [TrackerCategory] {
+        guard let objects = fetchedResultsController.fetchedObjects else { return [] }
+        return objects.compactMap { toCategory(from: $0) }
+    }
 
     func add(_ category: TrackerCategory) {
         let cdCategory = TrackerCategoryCoreData(context: context)
@@ -57,83 +66,71 @@ final class TrackerCategoryStore: NSObject {
         request.predicate = NSPredicate(format: "title == %@", categoryTitle)
 
         do {
-            let cdCategory = try context.fetch(request).first ?? createCategory(title: categoryTitle)
+            let results = try context.fetch(request)
+            let cdCategory: TrackerCategoryCoreData
+            if let existing = results.first {
+                cdCategory = existing
+            } else {
+                cdCategory = TrackerCategoryCoreData(context: context)
+                cdCategory.id = UUID()
+                cdCategory.title = categoryTitle
+            }
 
-            let cdTracker = try fetchTrackerCoreData(with: tracker.id) ?? TrackerCoreData(context: context)
-            apply(tracker, to: cdTracker)
+            let cdTracker = TrackerCoreData(context: context)
+            cdTracker.id = tracker.id
+            cdTracker.name = tracker.name
+            cdTracker.color = tracker.color
+            cdTracker.emoji = tracker.emoji
+            cdTracker.schedule = tracker.schedule as NSObject
 
-            var trackers = cdCategory.trackers as? Set<TrackerCoreData> ?? []
-            trackers.insert(cdTracker)
-            cdCategory.trackers = trackers as NSSet
+            var trackersSet = cdCategory.trackers as? Set<TrackerCoreData> ?? []
+            trackersSet.insert(cdTracker)
+            cdCategory.trackers = trackersSet as NSSet
 
             saveContext()
         } catch {
             print("❌ Ошибка добавления трекера в категорию: \(error)")
         }
     }
-
-    // MARK: - Private helpers
-
-    private static func makeFetchedResultsController(
-        context: NSManagedObjectContext
-    ) -> NSFetchedResultsController<TrackerCategoryCoreData> {
-
-        let request: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
-        request.sortDescriptors = [
-            NSSortDescriptor(keyPath: \TrackerCategoryCoreData.title, ascending: true)
-        ]
-
-        return NSFetchedResultsController(
-            fetchRequest: request,
-            managedObjectContext: context,
-            sectionNameKeyPath: nil,
-            cacheName: nil
-        )
-    }
-    
-    private func fetchTrackerCoreData(with id: UUID) throws -> TrackerCoreData? {
-        let request: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
-        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
-        request.fetchLimit = 1
-        return try context.fetch(request).first
-    }
-    
-    private func apply(_ tracker: Tracker, to cdTracker: TrackerCoreData) {
-        cdTracker.id = tracker.id
-        cdTracker.name = tracker.name
-        cdTracker.color = tracker.color
-        cdTracker.emoji = tracker.emoji
-        cdTracker.schedule = tracker.schedule as NSObject
-    }
-
-    private func performFetch() {
-        do {
-            try fetchedResultsController.performFetch()
-        } catch {
-            print("❌ Ошибка performFetch категорий: \(error)")
+    func fetchCategories() -> [TrackerCategoryCoreData] {
+            return fetchedResultsController.fetchedObjects ?? []
         }
+
+        func add(_ category: TrackerCategoryCoreData) {
+            // Проверяем, что объект с таким UUID ещё не существует
+            let request: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
+            request.predicate = NSPredicate(format: "id == %@", category.id! as CVarArg)
+            if let results = try? context.fetch(request), results.isEmpty {
+                let newCategory = TrackerCategoryCoreData(context: context)
+                newCategory.id = category.id
+                newCategory.title = category.title
+                saveContext()
+            }
+        }
+
+    // MARK: - Private
+    private static func makeFetchRequest() -> NSFetchRequest<TrackerCategoryCoreData> {
+        let request: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(keyPath: \TrackerCategoryCoreData.title, ascending: true)]
+        return request
     }
 
-    private func createCategory(title: String) -> TrackerCategoryCoreData {
-        let category = TrackerCategoryCoreData(context: context)
-        category.id = UUID()
-        category.title = title
-        return category
-    }
-
-    private func mapCategory(from cdCategory: TrackerCategoryCoreData) -> TrackerCategory? {
+    private func toCategory(from cdCategory: TrackerCategoryCoreData) -> TrackerCategory? {
         guard let id = cdCategory.id,
               let title = cdCategory.title else {
-            print("⚠️ Ошибка маппинга TrackerCategoryCoreData")
+            print(mappingErrorMessage)
             return nil
         }
 
-        return TrackerCategory(id: id, title: title, trackers: [])
+        let trackers: [Tracker] = [] // пока заглушка
+        return TrackerCategory(id: id, title: title, trackers: trackers)
     }
 
     private func saveContext() {
         do {
-            if context.hasChanges { try context.save() }
+            if context.hasChanges {
+                try context.save()
+            }
         } catch {
             print("❌ Ошибка сохранения контекста: \(error)")
         }
@@ -141,11 +138,8 @@ final class TrackerCategoryStore: NSObject {
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
-
 extension TrackerCategoryStore: NSFetchedResultsControllerDelegate {
-    func controllerDidChangeContent(
-        _ controller: NSFetchedResultsController<NSFetchRequestResult>
-    ) {
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         delegate?.didUpdateCategories()
     }
 }

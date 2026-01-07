@@ -20,6 +20,7 @@ final class NewHabitViewController: UIViewController, UITextFieldDelegate {
     private var selectedDays: [WeekDay] = []
     private var selectedEmoji: String?
     private var selectedColor: UIColor?
+    private var selectedCategory: TrackerCategoryCoreData?
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -94,36 +95,33 @@ final class NewHabitViewController: UIViewController, UITextFieldDelegate {
         colorCollectionVC.didMove(toParent: self)
         
         // Кастомный spacing между коллекциями
-        contentStack.setCustomSpacing(0, after: emojiCollectionVC.view) // 🔑 вот тут меняешь
+        contentStack.setCustomSpacing(0, after: emojiCollectionVC.view)
         
         NSLayoutConstraint.activate([
-            // Header
             modalHeader.topAnchor.constraint(equalTo: view.topAnchor),
             modalHeader.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             modalHeader.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             modalHeader.heightAnchor.constraint(equalToConstant: 90),
             
-            // Bottom buttons
             bottomButtons.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomButtons.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             bottomButtons.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             
-            // ScrollView между header и кнопками
             scrollView.topAnchor.constraint(equalTo: modalHeader.bottomAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: bottomButtons.topAnchor),
             
-            // StackView внутри scrollView
             contentStack.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: AppLayout.padding),
             contentStack.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: UIConstants.horizontalPadding),
             contentStack.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -UIConstants.horizontalPadding),
             contentStack.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: -AppLayout.padding),
             contentStack.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -2*UIConstants.horizontalPadding),
             
-            // Фиксированные размеры элементов
             nameTextField.heightAnchor.constraint(equalToConstant: 75),
-            tableContainer.heightAnchor.constraint(equalToConstant: 150)
+            tableContainer.heightAnchor.constraint(equalToConstant: 150),
+            emojiCollectionVC.view.heightAnchor.constraint(equalToConstant: 300),
+            colorCollectionVC.view.heightAnchor.constraint(equalToConstant: 200)
         ])
     }
     
@@ -154,7 +152,8 @@ final class NewHabitViewController: UIViewController, UITextFieldDelegate {
             name: title,
             color: color.toHexString(),
             emoji: emoji,
-            schedule: selectedDays
+            schedule: [],
+            trackerCategory: selectedCategory
         )
         
         onHabitCreated?(tracker)
@@ -174,13 +173,12 @@ extension NewHabitViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { 2 }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? ContainerTableViewCell else {
-            assertionFailure("Expected ContainerTableViewCell for reuseIdentifier: cell")
-            return UITableViewCell()
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! ContainerTableViewCell
+        if indexPath.row == 0 {
+            cell.textLabel?.text = selectedCategory?.title ?? "Категория"
+        } else {
+            cell.textLabel?.text = "Расписание"
         }
-        let title = indexPath.row == 0 ? "Категория" : "Расписание"
-        let subtitle = indexPath.row == 1 ? formattedSelectedDays() : nil
-        cell.configure(title: title, subtitle: subtitle)
         cell.accessoryType = .disclosureIndicator
         cell.isLastCell = indexPath.row == tableView.numberOfRows(inSection: indexPath.section) - 1
         return cell
@@ -188,33 +186,34 @@ extension NewHabitViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        
+        if indexPath.row == 0 {
+            // Переход к CategoryViewController
+            let coreDataStack = CoreDataStack.shared
+            let categoryStore = TrackerCategoryStore(context: coreDataStack.context)
+            let categoryVM = CategoryViewModel(store: categoryStore)
+            let categoryVC = CategoryViewController(store: categoryStore)
+            
+            categoryVM.onCategorySelected = { [weak self] category in
+                self?.selectedCategory = category
+                tableView.reloadRows(at: [indexPath], with: .automatic)
+            }
+            
+            present(categoryVC, animated: true)
+        }
+
         if indexPath.row == 1 {
             let scheduleVC = ScheduleViewController()
             scheduleVC.selectedDays = selectedDays
             scheduleVC.onDone = { [weak self] days in
-                guard let self else { return }
-                self.selectedDays = days
-                self.tableContainer.tableView.reloadRows(at: [IndexPath(row: 1, section: 0)], with: .none)
+                self?.selectedDays = days
             }
             present(scheduleVC, animated: true)
         }
     }
-
-    // MARK: - Schedule subtitle
-    private func formattedSelectedDays() -> String? {
-        guard !selectedDays.isEmpty else { return nil }
-
-        let ordered = selectedDays.sorted { $0.rawValue < $1.rawValue }
-
-        if ordered.count == WeekDay.allCases.count {
-            return "Каждый день"
-        }
-
-        return ordered.map(\.shortTitle).joined(separator: ", ")
-    }
-
 }
 
+// MARK: - UIColor extension
 extension UIColor {
     func toHexString() -> String {
         guard let components = cgColor.components, components.count >= 3 else {

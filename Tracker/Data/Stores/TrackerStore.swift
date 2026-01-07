@@ -44,6 +44,18 @@ final class TrackerStore: NSObject {
         return cdTrackers.compactMap { $0.toTracker() }
     }
     
+    func add(_ tracker: Tracker) {
+        let cdTracker = TrackerCoreData(context: context)
+        cdTracker.id = tracker.id
+        cdTracker.name = tracker.name
+        cdTracker.color = tracker.color
+        cdTracker.emoji = tracker.emoji
+        cdTracker.schedule = tracker.schedule as NSObject
+        cdTracker.trackerCategory = tracker.trackerCategory // <- напрямую
+
+        saveContext()
+    }
+    
     func delete(_ tracker: Tracker) {
         let request: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", tracker.id as CVarArg)
@@ -68,6 +80,7 @@ final class TrackerStore: NSObject {
                 cdTracker.color = tracker.color
                 cdTracker.emoji = tracker.emoji
                 cdTracker.schedule = tracker.schedule as NSObject
+                cdTracker.trackerCategory = tracker.trackerCategory
                 saveContext()
             }
         } catch {
@@ -85,7 +98,9 @@ final class TrackerStore: NSObject {
     }
     
     private func notifyDelegate() {
-        delegate?.didUpdateTrackers(getTrackers())
+        let trackersList = getTrackers()
+        print("🟢 Notifying delegate, trackers: \(trackersList.map { $0.name })")
+        delegate?.didUpdateTrackers(trackersList)
     }
 }
 
@@ -96,6 +111,7 @@ extension TrackerStore: NSFetchedResultsControllerDelegate {
     }
 }
 
+
 // MARK: - Mapper
 private extension TrackerCoreData {
     func toTracker() -> Tracker? {
@@ -103,8 +119,28 @@ private extension TrackerCoreData {
               let name = name,
               let color = color,
               let emoji = emoji,
-              let schedule = schedule as? [WeekDay] else { return nil }
-        
-        return Tracker(id: id, name: name, color: color, emoji: emoji, schedule: schedule)
+              let schedule = schedule else {
+            print("❌ toTracker guard failed for id: \(id?.uuidString ?? "nil")")
+            return nil
+        }
+
+        print("DEBUG: raw trackerCategory property type: \(type(of: self.trackerCategory as Any))")
+        print("DEBUG: raw schedule property type: \(type(of: schedule))")
+
+        // try cast schedule to expected type
+        let scheduleArray = schedule as? [WeekDay] ?? []
+        let category = trackerCategory as? TrackerCategoryCoreData
+
+        let tracker = Tracker(
+            id: id,
+            name: name,
+            color: color,
+            emoji: emoji,
+            schedule: scheduleArray,
+            trackerCategory: category
+        )
+
+        print("🟢 Mapped TrackerCoreData -> Tracker: \(tracker.name), category: \(category?.title ?? "nil")")
+        return tracker
     }
 }
