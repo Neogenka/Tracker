@@ -55,7 +55,7 @@ final class TrackersViewController: UIViewController {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: 160, height: 140)
         layout.minimumLineSpacing = AppLayout.padding
-        layout.minimumInteritemSpacing = 8
+        layout.minimumInteritemSpacing = 16
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.translatesAutoresizingMaskIntoConstraints = false
         cv.backgroundColor = .clear

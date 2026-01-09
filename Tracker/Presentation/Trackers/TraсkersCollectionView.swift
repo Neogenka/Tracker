@@ -5,7 +5,7 @@ extension TrackersViewController: UICollectionViewDataSource, UICollectionViewDe
     // MARK: - Layout constants
     private enum Layout {
         static let itemWidth: CGFloat = 160              // ширина ячейки
-        static let itemHeight: CGFloat = 140             // высота ячейки
+        static let itemHeight: CGFloat = 132             // высота ячейки
         static let lineSpacing: CGFloat = 16             // расстояние между рядами (вертикальное)
         static let interitemSpacing: CGFloat = 25         // расстояние между ячейками в ряду (горизонтальное)
         static let sectionInsets = UIEdgeInsets(

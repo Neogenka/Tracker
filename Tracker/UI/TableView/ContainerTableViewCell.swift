@@ -3,16 +3,12 @@ import UIKit
 final class ContainerTableViewCell: UITableViewCell {
 
     // MARK: - UI
-    private let leftPaddingView: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
 
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = AppFonts.body
-        label.textColor = .label
+        label.font = AppFonts.caption2
+        label.textColor = AppColors.backgroundBlackButton
+        label.numberOfLines = 1
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -26,28 +22,22 @@ final class ContainerTableViewCell: UITableViewCell {
         return label
     }()
 
-    private let labelsStack: UIStackView = {
-        let stack = UIStackView()
-        stack.axis = .vertical
-        stack.spacing = 2
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        return stack
-    }()
-
     private let separatorLine: UIView = {
         let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = UIColor.systemGray4
-        view.layer.zPosition = 1
+        view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
 
-    // MARK: - State
+    private var titleTopConstraint: NSLayoutConstraint!
+    private var titleCenterYConstraint: NSLayoutConstraint!
+
     var isLastCell: Bool = false {
         didSet { separatorLine.isHidden = isLastCell }
     }
 
     // MARK: - Init
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
@@ -57,43 +47,68 @@ final class ContainerTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    // MARK: - Public
+    // MARK: - Configure
+
     func configure(title: String, subtitle: String?) {
         titleLabel.text = title
-        let subtitle = subtitle?.trimmingCharacters(in: .whitespacesAndNewlines)
-        subtitleLabel.text = subtitle
-        subtitleLabel.isHidden = (subtitle?.isEmpty ?? true)
+
+        if let subtitle, !subtitle.isEmpty {
+            subtitleLabel.text = subtitle
+            subtitleLabel.isHidden = false
+
+            titleCenterYConstraint.isActive = false
+            titleTopConstraint.isActive = true
+        } else {
+            subtitleLabel.text = nil
+            subtitleLabel.isHidden = true
+
+            titleTopConstraint.isActive = false
+            titleCenterYConstraint.isActive = true
+        }
+    }
+
+    func configureAccessory(imageName: String?) {
+        guard let imageName, let image = UIImage(named: imageName) else {
+            accessoryView = nil
+            return
+        }
+        let imageView = UIImageView(image: image)
+        imageView.contentMode = .scaleAspectFit
+        accessoryView = imageView
     }
 
     // MARK: - Private
+
     private func setupUI() {
-        selectionStyle = .default
-        backgroundColor = .systemGray6
-        contentView.backgroundColor = .systemGray6
+        backgroundColor = .clear
+        contentView.backgroundColor = .clear
+        selectionStyle = .none
 
-        labelsStack.addArrangedSubview(titleLabel)
-        labelsStack.addArrangedSubview(subtitleLabel)
-
-        contentView.addSubview(leftPaddingView)
-        contentView.addSubview(labelsStack)
+        contentView.addSubview(titleLabel)
+        contentView.addSubview(subtitleLabel)
         contentView.addSubview(separatorLine)
 
+        let inset: CGFloat = 16
+
+        titleTopConstraint = titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 15)
+        titleCenterYConstraint = titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
+
         NSLayoutConstraint.activate([
-            leftPaddingView.widthAnchor.constraint(equalToConstant: 20),
-            leftPaddingView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            leftPaddingView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            leftPaddingView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: inset),
+            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -inset),
 
-            labelsStack.leadingAnchor.constraint(equalTo: leftPaddingView.trailingAnchor),
-            labelsStack.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -8),
-            labelsStack.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            labelsStack.topAnchor.constraint(greaterThanOrEqualTo: contentView.topAnchor, constant: 12),
-            labelsStack.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -12),
+            subtitleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: inset),
+            subtitleLabel.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -inset),
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 2),
+            subtitleLabel.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -15),
 
-            separatorLine.heightAnchor.constraint(equalToConstant: 1),
-            separatorLine.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            separatorLine.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            separatorLine.heightAnchor.constraint(equalToConstant: 0.5),
+            separatorLine.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: inset),
+            separatorLine.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -inset),
             separatorLine.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
+
+        titleCenterYConstraint.isActive = true
+        subtitleLabel.isHidden = true
     }
 }
