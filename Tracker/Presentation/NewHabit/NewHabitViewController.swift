@@ -126,30 +126,7 @@ final class NewHabitViewController: UIViewController, UITextFieldDelegate {
             emojiCollectionVC.view.heightAnchor.constraint(equalToConstant: collectionHeight(itemsCount: CollectionData.emojis.count)),
             colorCollectionVC.view.heightAnchor.constraint(equalToConstant: collectionHeight(itemsCount: CollectionData.colors.count))
         ])
-        if #available(iOS 15.0, *) {
-            view.keyboardLayoutGuide.followsUndockedKeyboard = true
-        
-            let clampToSafeArea = bottomButtons.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor)
-            clampToSafeArea.priority = .required
-        
-            let panelKeyboardBottom = bottomButtons.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor)
-            panelKeyboardBottom.priority = .init(999)
-        
-            NSLayoutConstraint.activate([clampToSafeArea, panelKeyboardBottom])
-        }
-
     }
-    
-
-
-
-
-
-
-
-
-
-
 
     private func collectionHeight(itemsCount: Int, columns: Int = 6) -> CGFloat {
         let rows = CGFloat((itemsCount + columns - 1) / columns)

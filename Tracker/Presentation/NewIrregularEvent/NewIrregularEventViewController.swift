@@ -122,18 +122,6 @@ final class NewIrregularEventViewController: UIViewController, UITextFieldDelega
             emojiCollectionVC.view.heightAnchor.constraint(equalToConstant: collectionHeight(itemsCount: CollectionData.emojis.count)),
             colorCollectionVC.view.heightAnchor.constraint(equalToConstant: collectionHeight(itemsCount: CollectionData.colors.count))
         ])
-        if #available(iOS 15.0, *) {
-            view.keyboardLayoutGuide.followsUndockedKeyboard = true
-        
-            let clampToSafeArea = bottomButtons.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor)
-            clampToSafeArea.priority = .required
-        
-            let panelKeyboardBottom = bottomButtons.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor)
-            panelKeyboardBottom.priority = .init(999)
-        
-            NSLayoutConstraint.activate([clampToSafeArea, panelKeyboardBottom])
-        }
-
     }
 
     private func collectionHeight(itemsCount: Int, columns: Int = 6) -> CGFloat {
@@ -179,7 +167,6 @@ final class NewIrregularEventViewController: UIViewController, UITextFieldDelega
         dismissToRoot()
     }
     
-
     private func dismissToRoot() {
             var presenter = presentingViewController
             while let next = presenter?.presentingViewController {

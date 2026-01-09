@@ -10,10 +10,10 @@ final class TrackersViewModel {
 
     // MARK: - State
     private let defaultCategoryTitle = "Мои трекеры"
-    @Published private(set) var trackers: [Tracker] = []
-    @Published var currentDate: Date = Date()
-    @Published var categories: [TrackerCategory] = []
-    @Published var completedTrackers: [TrackerRecord] = []
+    private(set) var trackers: [Tracker] = []
+    var currentDate: Date = Date()
+    var categories: [TrackerCategory] = []
+    var completedTrackers: [TrackerRecord] = []
 
     // MARK: - Callbacks
     var onTrackersUpdated: (() -> Void)?
