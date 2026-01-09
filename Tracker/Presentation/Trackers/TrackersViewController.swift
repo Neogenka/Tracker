@@ -53,8 +53,8 @@ final class TrackersViewController: UIViewController {
     
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: 160, height: 140)
-        layout.minimumLineSpacing = AppLayout.padding
+        layout.itemSize = CGSize(width: 160, height: 148)
+        layout.minimumLineSpacing = 0
         layout.minimumInteritemSpacing = 16
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.translatesAutoresizingMaskIntoConstraints = false

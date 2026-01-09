@@ -67,6 +67,9 @@ final class TrackerCell: UICollectionViewCell {
         bottomContainer.addSubview(toggleButton)
 
         setupConstraints()
+        
+        contentView.clipsToBounds = true
+        clipsToBounds = true
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -146,7 +149,7 @@ final class TrackerCell: UICollectionViewCell {
             bottomContainer.topAnchor.constraint(equalTo: cardView.bottomAnchor, constant: 8),
             bottomContainer.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             bottomContainer.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            bottomContainer.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            bottomContainer.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
             bottomContainer.heightAnchor.constraint(equalToConstant: 34),
 
             dayLabel.centerYAnchor.constraint(equalTo: bottomContainer.centerYAnchor),
