@@ -44,6 +44,18 @@ final class TrackerStore: NSObject {
         return cdTrackers.compactMap { $0.toTracker() }
     }
     
+    func add(_ tracker: Tracker) {
+        let cdTracker = TrackerCoreData(context: context)
+        cdTracker.id = tracker.id
+        cdTracker.name = tracker.name
+        cdTracker.color = tracker.color
+        cdTracker.emoji = tracker.emoji
+        cdTracker.schedule = tracker.schedule.map(\.rawValue) as NSArray
+        cdTracker.category = tracker.trackerCategory
+
+        saveContext()
+    }
+    
     func delete(_ tracker: Tracker) {
         let request: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", tracker.id as CVarArg)
@@ -67,7 +79,8 @@ final class TrackerStore: NSObject {
                 cdTracker.name = tracker.name
                 cdTracker.color = tracker.color
                 cdTracker.emoji = tracker.emoji
-                cdTracker.schedule = tracker.schedule as NSObject
+                cdTracker.schedule = tracker.schedule.map(\.rawValue) as NSArray
+        cdTracker.category = tracker.trackerCategory
                 saveContext()
             }
         } catch {
@@ -85,7 +98,9 @@ final class TrackerStore: NSObject {
     }
     
     private func notifyDelegate() {
-        delegate?.didUpdateTrackers(getTrackers())
+        let trackersList = getTrackers()
+        print("🟢 Notifying delegate, trackers: \(trackersList.map { $0.name })")
+        delegate?.didUpdateTrackers(trackersList)
     }
 }
 
@@ -96,15 +111,42 @@ extension TrackerStore: NSFetchedResultsControllerDelegate {
     }
 }
 
+
 // MARK: - Mapper
 private extension TrackerCoreData {
     func toTracker() -> Tracker? {
         guard let id = id,
               let name = name,
               let color = color,
-              let emoji = emoji,
-              let schedule = schedule as? [WeekDay] else { return nil }
-        
-        return Tracker(id: id, name: name, color: color, emoji: emoji, schedule: schedule)
+              let emoji = emoji else {
+            return nil
+        }
+
+        let scheduleArray: [WeekDay] = {
+            // Backward compatibility: old store might contain [WeekDay]
+            if let days = self.schedule as? [WeekDay] { return days }
+
+            let rawInts: [Int]
+            if let ints = self.schedule as? [Int] {
+                rawInts = ints
+            } else if let numbers = self.schedule as? [NSNumber] {
+                rawInts = numbers.map { $0.intValue }
+            } else if let array = self.schedule as? NSArray {
+                rawInts = array.compactMap { ($0 as? NSNumber)?.intValue }
+            } else {
+                rawInts = []
+            }
+
+            return rawInts.compactMap(WeekDay.init(rawValue:))
+        }()
+
+        return Tracker(
+            id: id,
+            name: name,
+            color: color,
+            emoji: emoji,
+            schedule: scheduleArray,
+            trackerCategory: self.category
+        )
     }
 }

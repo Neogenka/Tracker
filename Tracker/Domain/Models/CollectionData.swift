@@ -1,10 +1,3 @@
-//
-//  CollectionData.swift
-//  Tracker
-//
-//  Created by МAK on 04.01.2026.
-//
-
 import UIKit
 
 enum CollectionItem {

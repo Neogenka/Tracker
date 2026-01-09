@@ -1,17 +1,9 @@
-//
-//  SelectableCollectionViewController.swift
-//  Tracker
-//
-//  Created by МAK on 04.01.2026.
-//
-
 import UIKit
 
 final class SelectableCollectionViewController: UIViewController {
     
     private let items: [CollectionItem]
     private let headerTitle: String
-    private var heightConstraint: NSLayoutConstraint?
     private var selectedIndexPath: IndexPath?
     
     var onItemSelected: ((CollectionItem) -> Void)?
@@ -29,16 +21,12 @@ final class SelectableCollectionViewController: UIViewController {
         layout.scrollDirection = .vertical
         layout.minimumLineSpacing = 5
         layout.minimumInteritemSpacing = 5
-        layout.headerReferenceSize = CGSize(width: 0, height: 44)
+        layout.headerReferenceSize = CGSize(width: view.bounds.width, height: 44)
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = AppColors.background
         collectionView.dataSource = self
         collectionView.delegate = self
-        
-        collectionView.isScrollEnabled = false
-        collectionView.contentInsetAdjustmentBehavior = .never
-        
         collectionView.register(SelectableCell.self, forCellWithReuseIdentifier: SelectableCell.reuseId)
         collectionView.register(HeaderView.self,
                                 forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
@@ -52,29 +40,12 @@ final class SelectableCollectionViewController: UIViewController {
         view.addSubview(collectionView)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         
-        heightConstraint = collectionView.heightAnchor.constraint(equalToConstant: 1)
-        heightConstraint?.isActive = true
-        
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: AppLayout.padding),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -AppLayout.padding),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
-    }
-    
-    override func viewDidLayoutSubviews() {
-    super.viewDidLayoutSubviews()
-    updateHeightIfNeeded()
-    }
-
-    private func updateHeightIfNeeded() {
-        collectionView.layoutIfNeeded()
-        let newHeight = collectionView.collectionViewLayout.collectionViewContentSize.height
-        
-        if heightConstraint?.constant != newHeight {
-            heightConstraint?.constant = newHeight
-        }
     }
 }
 
@@ -88,13 +59,10 @@ extension SelectableCollectionViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView,
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(
+        let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: SelectableCell.reuseId,
             for: indexPath
-        ) as? SelectableCell else {
-            assertionFailure("Expected SelectableCell for reuseIdentifier: \(SelectableCell.reuseId)")
-            return UICollectionViewCell()
-        }
+        ) as! SelectableCell
         
         let isSelected = indexPath == selectedIndexPath
         cell.configure(with: items[indexPath.item], isSelected: isSelected)
@@ -104,14 +72,11 @@ extension SelectableCollectionViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView,
                         viewForSupplementaryElementOfKind kind: String,
                         at indexPath: IndexPath) -> UICollectionReusableView {
-        guard let header = collectionView.dequeueReusableSupplementaryView(
+        let header = collectionView.dequeueReusableSupplementaryView(
             ofKind: kind,
             withReuseIdentifier: HeaderView.reuseId,
             for: indexPath
-        ) as? HeaderView else {
-            assertionFailure("Expected HeaderView for reuseIdentifier: \(HeaderView.reuseId)")
-            return UICollectionReusableView()
-        }
+        ) as! HeaderView
         header.titleLabel.text = headerTitle
         return header
     }

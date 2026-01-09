@@ -5,6 +5,7 @@ final class NewIrregularEventViewController: UIViewController, UITextFieldDelega
     // MARK: - UI
     private let scrollView = UIScrollView()
     private let contentStack = UIStackView()
+    private var selectedCategory: TrackerCategoryCoreData?
     
     private let modalHeader = ModalHeaderView(title: "Новое нерегулярное событие")
     private let nameTextField = AppTextField(placeholder: "Введите название трекера")
@@ -87,6 +88,9 @@ final class NewIrregularEventViewController: UIViewController, UITextFieldDelega
         addChild(colorCollectionVC)
         colorCollectionVC.didMove(toParent: self)
         
+        let panelSafeBottom = bottomButtons.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        panelSafeBottom.priority = .init(998)
+        
         NSLayoutConstraint.activate([
             // Header
             modalHeader.topAnchor.constraint(equalTo: view.topAnchor),
@@ -97,7 +101,7 @@ final class NewIrregularEventViewController: UIViewController, UITextFieldDelega
             // Bottom buttons
             bottomButtons.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomButtons.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bottomButtons.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            panelSafeBottom,
             
             // ScrollView
             scrollView.topAnchor.constraint(equalTo: modalHeader.bottomAnchor),
@@ -115,11 +119,19 @@ final class NewIrregularEventViewController: UIViewController, UITextFieldDelega
             // Fixed heights
             nameTextField.heightAnchor.constraint(equalToConstant: 75),
             tableContainer.heightAnchor.constraint(equalToConstant: 75),
-            emojiCollectionVC.view.heightAnchor.constraint(equalToConstant: 300),
-            colorCollectionVC.view.heightAnchor.constraint(equalToConstant: 200)
+            emojiCollectionVC.view.heightAnchor.constraint(equalToConstant: collectionHeight(itemsCount: CollectionData.emojis.count)),
+            colorCollectionVC.view.heightAnchor.constraint(equalToConstant: collectionHeight(itemsCount: CollectionData.colors.count))
         ])
     }
-    
+
+    private func collectionHeight(itemsCount: Int, columns: Int = 6) -> CGFloat {
+        let rows = CGFloat((itemsCount + columns - 1) / columns)
+        let itemSize: CGFloat = 52
+        let lineSpacing: CGFloat = 5
+        let headerHeight: CGFloat = 44
+        return headerHeight + rows * itemSize + max(0, rows - 1) * lineSpacing
+    }
+
     // MARK: - Actions
     private func setupActions() {
         bottomButtons.cancelButton.addTarget(self, action: #selector(cancelTapped), for: .touchUpInside)
@@ -146,13 +158,23 @@ final class NewIrregularEventViewController: UIViewController, UITextFieldDelega
             name: title,
             color: color.toHexString(),
             emoji: emoji,
-            schedule: [] // для нерегулярного события всегда пусто
-        )
+            schedule: [],
+            trackerCategory: selectedCategory
+            )
+
         
         onEventCreated?(tracker)
-        dismiss(animated: true)
+        dismissToRoot()
     }
     
+    private func dismissToRoot() {
+            var presenter = presentingViewController
+            while let next = presenter?.presentingViewController {
+                presenter = next
+            }
+            presenter?.dismiss(animated: true)
+    }
+
     // MARK: - UITextField
     func textFieldDidChangeSelection(_ textField: UITextField) {
         let hasText = !(textField.text?.trimmingCharacters(in: .whitespaces).isEmpty ?? true)
@@ -166,12 +188,8 @@ extension NewIrregularEventViewController: UITableViewDataSource, UITableViewDel
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { 1 }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? ContainerTableViewCell else {
-            assertionFailure("Expected ContainerTableViewCell for reuseIdentifier: cell")
-            return UITableViewCell()
-        }
-
-        cell.configure(title: "Категория")
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! ContainerTableViewCell
+        cell.configure(title: "Категория", subtitle: selectedCategory?.title)
         cell.accessoryType = .disclosureIndicator
         cell.isLastCell = true
         return cell
@@ -179,6 +197,18 @@ extension NewIrregularEventViewController: UITableViewDataSource, UITableViewDel
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        print("Категория выбрана")
+        
+        // Переход к CategoryViewController
+        let coreDataStack = CoreDataStack.shared
+        let categoryStore = TrackerCategoryStore(context: coreDataStack.context)
+        let categoryVC = CategoryViewController(store: categoryStore)
+
+        categoryVC.onCategorySelected = { [weak self, weak categoryVC] category in
+            self?.selectedCategory = category
+            tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+            categoryVC?.dismiss(animated: true)
+        }
+
+        present(categoryVC, animated: true)
     }
 }

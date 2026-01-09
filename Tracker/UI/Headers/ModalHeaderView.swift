@@ -15,6 +15,7 @@ final class ModalHeaderView: UIView {
     // MARK: - Init
     init(title: String) {
         super.init(frame: .zero)
+        translatesAutoresizingMaskIntoConstraints = false
         backgroundColor = AppColors.background
         titleLabel.text = title
         setupLayout()
@@ -22,6 +23,11 @@ final class ModalHeaderView: UIView {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: - Public API
+    func setTitle(_ title: String) {
+        titleLabel.text = title
     }
 
     // MARK: - Layout
@@ -32,7 +38,7 @@ final class ModalHeaderView: UIView {
             // Высота панели
             heightAnchor.constraint(equalToConstant: 90),
 
-            // Заголовок по центру горизонтали и с отступом сверху 78
+            // Заголовок по центру горизонтали и с отступом сверху 40
             titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 40),
             titleLabel.centerXAnchor.constraint(equalTo: centerXAnchor)
         ])

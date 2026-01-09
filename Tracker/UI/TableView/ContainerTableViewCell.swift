@@ -2,89 +2,113 @@ import UIKit
 
 final class ContainerTableViewCell: UITableViewCell {
 
-    // MARK: - Public
-    var isLastCell: Bool = false {
-        didSet { separatorLine.isHidden = isLastCell }
-    }
-
-    func configure(title: String, subtitle: String? = nil) {
-        titleLabel.text = title
-
-        let subtitleText = subtitle?.trimmingCharacters(in: .whitespacesAndNewlines)
-        subtitleLabel.text = subtitleText
-        subtitleLabel.isHidden = (subtitleText?.isEmpty ?? true)
-    }
-
     // MARK: - UI
+
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 17, weight: .regular)
-        label.textColor = .label
+        label.font = AppFonts.caption2
+        label.textColor = AppColors.backgroundBlackButton
         label.numberOfLines = 1
+        label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
 
     private let subtitleLabel: UILabel = {
         let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 13, weight: .regular)
-        label.textColor = .secondaryLabel
+        label.font = AppFonts.caption
+        label.textColor = AppColors.textSecondary
         label.numberOfLines = 1
-        label.isHidden = true
+        label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
 
-    private lazy var labelsStack: UIStackView = {
-        let stack = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        stack.axis = .vertical
-        stack.alignment = .leading
-        stack.spacing = 2
-        return stack
-    }()
-
-    // MARK: - Separator
     private let separatorLine: UIView = {
         let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = UIColor.systemGray4
+        view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
 
+    private var titleTopConstraint: NSLayoutConstraint!
+    private var titleCenterYConstraint: NSLayoutConstraint!
+
+    var isLastCell: Bool = false {
+        didSet { separatorLine.isHidden = isLastCell }
+    }
+
     // MARK: - Init
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setupStyle()
-        setupLayout()
+        setupUI()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    // MARK: - Setup
-    private func setupStyle() {
-        backgroundColor = .systemGray6
-        contentView.backgroundColor = .systemGray6
-        selectionStyle = .none
-        accessoryType = .none
+    // MARK: - Configure
+
+    func configure(title: String, subtitle: String?) {
+        titleLabel.text = title
+
+        if let subtitle, !subtitle.isEmpty {
+            subtitleLabel.text = subtitle
+            subtitleLabel.isHidden = false
+
+            titleCenterYConstraint.isActive = false
+            titleTopConstraint.isActive = true
+        } else {
+            subtitleLabel.text = nil
+            subtitleLabel.isHidden = true
+
+            titleTopConstraint.isActive = false
+            titleCenterYConstraint.isActive = true
+        }
     }
 
-    private func setupLayout() {
-        contentView.addSubview(labelsStack)
+    func configureAccessory(imageName: String?) {
+        guard let imageName, let image = UIImage(named: imageName) else {
+            accessoryView = nil
+            return
+        }
+        let imageView = UIImageView(image: image)
+        imageView.contentMode = .scaleAspectFit
+        accessoryView = imageView
+    }
+
+    // MARK: - Private
+
+    private func setupUI() {
+        backgroundColor = .clear
+        contentView.backgroundColor = .clear
+        selectionStyle = .none
+
+        contentView.addSubview(titleLabel)
+        contentView.addSubview(subtitleLabel)
         contentView.addSubview(separatorLine)
 
-        // Важно: оставляем место справа под disclosureIndicator / UISwitch
-        NSLayoutConstraint.activate([
-            labelsStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            labelsStack.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -80),
-            labelsStack.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+        let inset: CGFloat = 16
 
-            separatorLine.heightAnchor.constraint(equalToConstant: 1),
-            separatorLine.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            separatorLine.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+        titleTopConstraint = titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 15)
+        titleCenterYConstraint = titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
+
+        NSLayoutConstraint.activate([
+            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: inset),
+            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -inset),
+
+            subtitleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: inset),
+            subtitleLabel.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -inset),
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 2),
+            subtitleLabel.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -15),
+
+            separatorLine.heightAnchor.constraint(equalToConstant: 0.5),
+            separatorLine.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: inset),
+            separatorLine.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -inset),
             separatorLine.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
+
+        titleCenterYConstraint.isActive = true
+        subtitleLabel.isHidden = true
     }
 }
