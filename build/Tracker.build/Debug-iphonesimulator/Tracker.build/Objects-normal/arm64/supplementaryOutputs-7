@@ -1,0 +1,30 @@
+"/Users/m.kozhukhov/Documents/projects/Tracker/Tracker/App/SceneDelegate.swift":
+  swift-dependencies: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/SceneDelegate.swiftdeps"
+  diagnostics: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/SceneDelegate.dia"
+  dependencies: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/SceneDelegate.d"
+  object: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/SceneDelegate.o"
+  const-values: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/SceneDelegate.swiftconstvalues"
+"/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/DerivedSources/CoreDataGenerated/Tracker/TrackerCoreData+CoreDataClass.swift":
+  swift-dependencies: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/TrackerCoreData+CoreDataClass.swiftdeps"
+  diagnostics: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/TrackerCoreData+CoreDataClass.dia"
+  dependencies: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/TrackerCoreData+CoreDataClass.d"
+  const-values: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/TrackerCoreData+CoreDataClass.swiftconstvalues"
+  object: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/TrackerCoreData+CoreDataClass.o"
+"/Users/m.kozhukhov/Documents/projects/Tracker/Tracker/UI/TableView/PlaceholderView.swift":
+  diagnostics: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/PlaceholderView.dia"
+  object: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/PlaceholderView.o"
+  const-values: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/PlaceholderView.swiftconstvalues"
+  swift-dependencies: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/PlaceholderView.swiftdeps"
+  dependencies: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/PlaceholderView.d"
+"/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/DerivedSources/CoreDataGenerated/Tracker/TrackerCategoryCoreData+CoreDataProperties.swift":
+  dependencies: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/TrackerCategoryCoreData+CoreDataProperties.d"
+  const-values: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/TrackerCategoryCoreData+CoreDataProperties.swiftconstvalues"
+  diagnostics: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/TrackerCategoryCoreData+CoreDataProperties.dia"
+  swift-dependencies: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/TrackerCategoryCoreData+CoreDataProperties.swiftdeps"
+  object: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/TrackerCategoryCoreData+CoreDataProperties.o"
+"/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/DerivedSources/CoreDataGenerated/Tracker/TrackerCategoryCoreData+CoreDataClass.swift":
+  swift-dependencies: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/TrackerCategoryCoreData+CoreDataClass.swiftdeps"
+  diagnostics: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/TrackerCategoryCoreData+CoreDataClass.dia"
+  dependencies: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/TrackerCategoryCoreData+CoreDataClass.d"
+  object: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/TrackerCategoryCoreData+CoreDataClass.o"
+  const-values: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/TrackerCategoryCoreData+CoreDataClass.swiftconstvalues"

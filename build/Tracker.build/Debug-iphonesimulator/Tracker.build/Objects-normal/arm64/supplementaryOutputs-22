@@ -1,0 +1,36 @@
+"/Users/m.kozhukhov/Documents/projects/Tracker/Tracker/Services/HabitFlowPresenter.swift":
+  object: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/HabitFlowPresenter.o"
+  dependencies: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/HabitFlowPresenter.d"
+  const-values: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/HabitFlowPresenter.swiftconstvalues"
+  swift-dependencies: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/HabitFlowPresenter.swiftdeps"
+  diagnostics: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/HabitFlowPresenter.dia"
+"/Users/m.kozhukhov/Documents/projects/Tracker/Tracker/UI/Panels/ButonsPanelView.swift":
+  const-values: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/ButonsPanelView.swiftconstvalues"
+  diagnostics: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/ButonsPanelView.dia"
+  dependencies: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/ButonsPanelView.d"
+  swift-dependencies: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/ButonsPanelView.swiftdeps"
+  object: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/ButonsPanelView.o"
+"/Users/m.kozhukhov/Documents/projects/Tracker/Tracker/Data/Stores/TrackerStore.swift":
+  swift-dependencies: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/TrackerStore.swiftdeps"
+  dependencies: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/TrackerStore.d"
+  diagnostics: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/TrackerStore.dia"
+  const-values: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/TrackerStore.swiftconstvalues"
+  object: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/TrackerStore.o"
+"/Users/m.kozhukhov/Documents/projects/Tracker/Tracker/UI/TableView/ContainerTableViewCell.swift":
+  swift-dependencies: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/ContainerTableViewCell.swiftdeps"
+  dependencies: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/ContainerTableViewCell.d"
+  diagnostics: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/ContainerTableViewCell.dia"
+  const-values: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/ContainerTableViewCell.swiftconstvalues"
+  object: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/ContainerTableViewCell.o"
+"/Users/m.kozhukhov/Documents/projects/Tracker/Tracker/UI/TextFields/AppTextField.swift":
+  dependencies: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/AppTextField.d"
+  object: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/AppTextField.o"
+  const-values: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/AppTextField.swiftconstvalues"
+  swift-dependencies: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/AppTextField.swiftdeps"
+  diagnostics: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/AppTextField.dia"
+"/Users/m.kozhukhov/Documents/projects/Tracker/Tracker/App/MainTabBarController.swift":
+  object: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/MainTabBarController.o"
+  dependencies: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/MainTabBarController.d"
+  swift-dependencies: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/MainTabBarController.swiftdeps"
+  diagnostics: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/MainTabBarController.dia"
+  const-values: "/Users/m.kozhukhov/Documents/projects/Tracker/build/Tracker.build/Debug-iphonesimulator/Tracker.build/Objects-normal/arm64/MainTabBarController.swiftconstvalues"
