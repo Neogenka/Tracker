@@ -6,7 +6,18 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		9830CF792F13DBCD0001B9A3 /* YandexMobileMetrica in Frameworks */ = {isa = PBXBuildFile; productRef = 9830CF782F13DBCD0001B9A3 /* YandexMobileMetrica */; };
+		9830CF7B2F13DBCD0001B9A3 /* YandexMobileMetricaCrashes in Frameworks */ = {isa = PBXBuildFile; productRef = 9830CF7A2F13DBCD0001B9A3 /* YandexMobileMetricaCrashes */; };
+		9830CF852F13DBFE0001B9A3 /* InMemoryLogging in Frameworks */ = {isa = PBXBuildFile; productRef = 9830CF842F13DBFE0001B9A3 /* InMemoryLogging */; };
+		9830CF872F13DBFE0001B9A3 /* Logging in Frameworks */ = {isa = PBXBuildFile; productRef = 9830CF862F13DBFE0001B9A3 /* Logging */; };
+		9830D0742F13F2D00001B9A3 /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = 9830D0732F13F2D00001B9A3 /* Localizable.stringsdict */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		9830D0702F13F2D00001B9A3 /* Localizable.stringsdict */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = Localizable.stringsdict; path = en.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
+		9830D0712F13F2D00001B9A3 /* Localizable.stringsdict */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = Localizable.stringsdict; path = ru.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
+		9830D0722F13F2D00001B9A3 /* Localizable.stringsdict */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = Localizable.stringsdict; path = fr.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		984C17FA2EFC5A91005FF730 /* Tracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -36,6 +47,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9830CF792F13DBCD0001B9A3 /* YandexMobileMetrica in Frameworks */,
+				9830CF872F13DBFE0001B9A3 /* Logging in Frameworks */,
+				9830CF852F13DBFE0001B9A3 /* InMemoryLogging in Frameworks */,
+				9830CF7B2F13DBCD0001B9A3 /* YandexMobileMetricaCrashes in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -45,6 +60,7 @@
 		984C17F12EFC5A91005FF730 = {
 			isa = PBXGroup;
 			children = (
+				9830D0732F13F2D00001B9A3 /* Localizable.stringsdict */,
 				984C17FC2EFC5A91005FF730 /* Tracker */,
 				984C17FB2EFC5A91005FF730 /* Products */,
 			);
@@ -78,6 +94,10 @@
 			);
 			name = Tracker;
 			packageProductDependencies = (
+				9830CF782F13DBCD0001B9A3 /* YandexMobileMetrica */,
+				9830CF7A2F13DBCD0001B9A3 /* YandexMobileMetricaCrashes */,
+				9830CF842F13DBFE0001B9A3 /* InMemoryLogging */,
+				9830CF862F13DBFE0001B9A3 /* Logging */,
 			);
 			productName = Tracker;
 			productReference = 984C17FA2EFC5A91005FF730 /* Tracker.app */;
@@ -104,9 +124,15 @@
 			knownRegions = (
 				en,
 				Base,
+				ru,
+				fr,
 			);
 			mainGroup = 984C17F12EFC5A91005FF730;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				9830CF772F13DBCD0001B9A3 /* XCRemoteSwiftPackageReference "metrica-sdk-ios" */,
+				9830CF832F13DBFE0001B9A3 /* XCRemoteSwiftPackageReference "swift-log" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 984C17FB2EFC5A91005FF730 /* Products */;
 			projectDirPath = "";
@@ -122,6 +148,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9830D0742F13F2D00001B9A3 /* Localizable.stringsdict in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -136,6 +163,19 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		9830D0732F13F2D00001B9A3 /* Localizable.stringsdict */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9830D0702F13F2D00001B9A3 /* Localizable.stringsdict */,
+				9830D0712F13F2D00001B9A3 /* Localizable.stringsdict */,
+				9830D0722F13F2D00001B9A3 /* Localizable.stringsdict */,
+			);
+			name = Localizable.stringsdict;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		984C180E2EFC5A93005FF730 /* Debug */ = {
@@ -347,6 +387,48 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		9830CF772F13DBCD0001B9A3 /* XCRemoteSwiftPackageReference "metrica-sdk-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/yandexmobile/metrica-sdk-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.5.2;
+			};
+		};
+		9830CF832F13DBFE0001B9A3 /* XCRemoteSwiftPackageReference "swift-log" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-log";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.8.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		9830CF782F13DBCD0001B9A3 /* YandexMobileMetrica */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9830CF772F13DBCD0001B9A3 /* XCRemoteSwiftPackageReference "metrica-sdk-ios" */;
+			productName = YandexMobileMetrica;
+		};
+		9830CF7A2F13DBCD0001B9A3 /* YandexMobileMetricaCrashes */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9830CF772F13DBCD0001B9A3 /* XCRemoteSwiftPackageReference "metrica-sdk-ios" */;
+			productName = YandexMobileMetricaCrashes;
+		};
+		9830CF842F13DBFE0001B9A3 /* InMemoryLogging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9830CF832F13DBFE0001B9A3 /* XCRemoteSwiftPackageReference "swift-log" */;
+			productName = InMemoryLogging;
+		};
+		9830CF862F13DBFE0001B9A3 /* Logging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9830CF832F13DBFE0001B9A3 /* XCRemoteSwiftPackageReference "swift-log" */;
+			productName = Logging;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 984C17F22EFC5A91005FF730 /* Project object */;
 }

@@ -1,7 +1,8 @@
 import UIKit
+import YandexMobileMetrica
 
 @main
-class AppDelegate: UIResponder, UIApplicationDelegate {
+final class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
     
@@ -12,6 +13,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil
     ) -> Bool {
+        if let configuration = YMMYandexMetricaConfiguration(apiKey: "5afc96f8-ab58-4d42-948a-3c6685bbb788") {
+            YMMYandexMetrica.activate(with: configuration)
+        } else {}
         
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.rootViewController = MainTabBarController()

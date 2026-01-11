@@ -1,8 +1,11 @@
 import CoreData
+import Foundation
+import Logging
 
 final class CoreDataStack {
     
     static let shared = CoreDataStack()
+    private init() {}
     
     // MARK: - Persistent Container
     lazy var persistentContainer: NSPersistentContainer = {
@@ -15,6 +18,9 @@ final class CoreDataStack {
                 print("✅ Загружен Store: \(description)")
             }
         }
+        let context = container.viewContext
+        context.automaticallyMergesChangesFromParent = true
+        context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         
         return container
     }()
