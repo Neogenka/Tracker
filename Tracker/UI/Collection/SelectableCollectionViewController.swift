@@ -22,6 +22,8 @@ final class SelectableCollectionViewController: UIViewController {
         collectionView.backgroundColor = AppColors.background
         collectionView.dataSource = self
         collectionView.delegate = self
+        collectionView.isScrollEnabled = false
+        collectionView.alwaysBounceVertical = false
         collectionView.register(SelectableCell.self, forCellWithReuseIdentifier: SelectableCell.reuseId)
         collectionView.register(HeaderView.self,
                                 forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
@@ -34,9 +36,9 @@ final class SelectableCollectionViewController: UIViewController {
         view.addSubview(collectionView)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: AppLayout.padding),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -AppLayout.padding),
+            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
     }

@@ -26,6 +26,9 @@ class BaseTrackerCreationViewController: UIViewController {
         items: CollectionData.colors,
         headerTitle: NSLocalizedString("new_habit.color", comment: "")
     )
+    private var emojiHeightConstraint: NSLayoutConstraint?
+    private var colorHeightConstraint: NSLayoutConstraint?
+
     let bottomButtons = ButonnsPanelView()
     let context = CoreDataStack.shared.context
     var selectedDays: [WeekDay] = []
@@ -97,6 +100,20 @@ class BaseTrackerCreationViewController: UIViewController {
         emojiCollectionVC.didMove(toParent: self)
         addChild(colorCollectionVC)
         colorCollectionVC.didMove(toParent: self)
+
+        let availableWidth = view.bounds.width > 0
+            ? (view.bounds.width - 2 * UIConstants.horizontalPadding)
+            : (UIScreen.main.bounds.width - 2 * UIConstants.horizontalPadding)
+
+        emojiHeightConstraint = emojiCollectionVC.view.heightAnchor.constraint(
+            equalToConstant: collectionSectionHeight(itemsCount: CollectionData.emojis.count, availableWidth: availableWidth)
+        )
+        colorHeightConstraint = colorCollectionVC.view.heightAnchor.constraint(
+            equalToConstant: collectionSectionHeight(itemsCount: CollectionData.colors.count, availableWidth: availableWidth)
+        )
+        emojiHeightConstraint?.isActive = true
+        colorHeightConstraint?.isActive = true
+
         NSLayoutConstraint.activate([
             modalHeader.topAnchor.constraint(equalTo: view.topAnchor),
             modalHeader.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -116,11 +133,32 @@ class BaseTrackerCreationViewController: UIViewController {
             contentStack.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -2 * UIConstants.horizontalPadding),
             nameTextField.heightAnchor.constraint(equalToConstant: 75),
             tableContainer.heightAnchor.constraint(equalToConstant: 150),
-            emojiCollectionVC.view.heightAnchor.constraint(equalToConstant: 300),
-            colorCollectionVC.view.heightAnchor.constraint(equalToConstant: 200),
+            
+            
         ])
     }
-    private func setupActions() {
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        let availableWidth = view.bounds.width - 2 * UIConstants.horizontalPadding
+        emojiHeightConstraint?.constant = collectionSectionHeight(itemsCount: CollectionData.emojis.count, availableWidth: availableWidth)
+        colorHeightConstraint?.constant = collectionSectionHeight(itemsCount: CollectionData.colors.count, availableWidth: availableWidth)
+    }
+
+    private func collectionSectionHeight(itemsCount: Int, availableWidth: CGFloat) -> CGFloat {
+        let itemSide: CGFloat = 52
+        let spacing: CGFloat = 5
+        let headerHeight: CGFloat = 44
+
+        let columns = max(1, Int((availableWidth + spacing) / (itemSide + spacing)))
+        let rows = Int(ceil(Double(itemsCount) / Double(columns)))
+
+        let gridHeight = CGFloat(rows) * itemSide + CGFloat(max(0, rows - 1)) * spacing
+        return headerHeight + gridHeight
+    }
+
+private func setupActions() {
         bottomButtons.cancelButton.addTarget(self, action: #selector(cancelTapped), for: .touchUpInside)
     }
     @objc func cancelTapped() {
