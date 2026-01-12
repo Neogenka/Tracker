@@ -25,11 +25,13 @@ final class OnboardingViewController: UIPageViewController, UIPageViewController
         button.addTarget(self, action: #selector(finishOnboarding), for: .touchUpInside)
         return button
     }()
+    
     init() {
         super.init(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
     }
     @available(*, unavailable)
     required init?(coder _: NSCoder) { nil }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -52,9 +54,31 @@ final class OnboardingViewController: UIPageViewController, UIPageViewController
             pageControl.centerXAnchor.constraint(equalTo: view.centerXAnchor),
         ])
     }
+    
     @objc private func finishOnboarding() {
-        dismiss(animated: true)
+        UserDefaults.standard.set(true, forKey: "hasSeenOnboarding")
+
+        let mainTabBar = MainTabBarController()
+
+        let window = view.window
+            ?? UIApplication.shared.connectedScenes
+                .compactMap { $0 as? UIWindowScene }
+                .flatMap { $0.windows }
+                .first { $0.isKeyWindow }
+
+        guard let window else { return }
+
+        UIView.transition(
+            with: window,
+            duration: 0.25,
+            options: [.transitionCrossDissolve],
+            animations: {
+                window.rootViewController = mainTabBar
+            }
+        )
     }
+
+    
     func pageViewController(_: UIPageViewController,
                             viewControllerBefore viewController: UIViewController) -> UIViewController?
     {

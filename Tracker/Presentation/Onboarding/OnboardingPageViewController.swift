@@ -3,6 +3,7 @@ import UIKit
 final class OnboardingPageViewController: UIViewController {
     private let imageName: String
     private let text: String
+    
     init(imageName: String, text: String) {
         self.imageName = imageName
         self.text = text
@@ -10,6 +11,7 @@ final class OnboardingPageViewController: UIViewController {
     }
     @available(*, unavailable)
     required init?(coder _: NSCoder) { nil }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         let imageView = UIImageView(image: UIImage(named: imageName))

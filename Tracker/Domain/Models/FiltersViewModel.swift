@@ -42,8 +42,7 @@ final class FiltersViewModel {
         Publishers.CombineLatest3($selectedDate, $selectedFilterIndex, $searchText)
             .debounce(for: .milliseconds(150), scheduler: DispatchQueue.main)
             .sink { [weak self] date, _, _ in
-                guard let self else { return }
-                guard self.hasInitialDataLoaded else { return }
+                guard let self, self.hasInitialDataLoaded else { return }
                 self.applyAllFiltersDebounced(for: date)
             }
             .store(in: &cancellables)

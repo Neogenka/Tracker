@@ -3,10 +3,12 @@ import UIKit
 final class StatisticsViewController: UIViewController {
     private let trackerRecordStore: TrackerRecordStore
     private let placeholderView = PlaceholderView()
+    
     init(trackerRecordStore: TrackerRecordStore) {
         self.trackerRecordStore = trackerRecordStore
         super.init(nibName: nil, bundle: nil)
     }
+    
     @available(*, unavailable)
     required init?(coder _: NSCoder) { nil }
     private let titleView = MainTitleLabelView(
@@ -26,6 +28,7 @@ final class StatisticsViewController: UIViewController {
     private var tableViewCenterYConstraint: NSLayoutConstraint!
     private var tableViewHeightConstraint: NSLayoutConstraint!
     private var items: [(Int, String)] = []
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = AppColors.background
@@ -124,6 +127,7 @@ final class StatisticsViewController: UIViewController {
         }
     }
 }
+
 extension StatisticsViewController: UITableViewDataSource {
     func numberOfSections(in _: UITableView) -> Int {
         items.count
