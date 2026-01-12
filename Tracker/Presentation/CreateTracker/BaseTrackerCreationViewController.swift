@@ -49,6 +49,20 @@ class BaseTrackerCreationViewController: UIViewController {
         setupActions()
         setupSelectionCallbacks()
         setupTextField()
+        setupKeyboardDismiss()
+    }
+    private func setupKeyboardDismiss() {
+        scrollView.keyboardDismissMode = .onDrag
+
+        nameTextField.textField.returnKeyType = .done
+        nameTextField.textField.addTarget(self, action: #selector(hideKeyboard), for: .editingDidEndOnExit)
+
+        let tap = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+    }
+    @objc private func hideKeyboard() {
+        view.endEditing(true)
     }
     private func setupTextField() {
         nameTextField.onTextChanged = { [weak self] text in
@@ -113,6 +127,14 @@ class BaseTrackerCreationViewController: UIViewController {
         )
         emojiHeightConstraint?.isActive = true
         colorHeightConstraint?.isActive = true
+        let bottomSafeBottom = bottomButtons.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        bottomSafeBottom.priority = .init(998)
+
+        let bottomKeyboardBottom = bottomButtons.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor)
+        bottomKeyboardBottom.priority = .init(999)
+
+        let bottomClamp = bottomButtons.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor)
+        bottomClamp.priority = .required
 
         NSLayoutConstraint.activate([
             modalHeader.topAnchor.constraint(equalTo: view.topAnchor),
@@ -121,7 +143,6 @@ class BaseTrackerCreationViewController: UIViewController {
             modalHeader.heightAnchor.constraint(equalToConstant: 90),
             bottomButtons.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomButtons.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bottomButtons.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             scrollView.topAnchor.constraint(equalTo: modalHeader.bottomAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -133,8 +154,9 @@ class BaseTrackerCreationViewController: UIViewController {
             contentStack.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -2 * UIConstants.horizontalPadding),
             nameTextField.heightAnchor.constraint(equalToConstant: 75),
             tableContainer.heightAnchor.constraint(equalToConstant: 150),
-            
-            
+            bottomSafeBottom,
+            bottomKeyboardBottom,
+            bottomClamp,
         ])
     }
     

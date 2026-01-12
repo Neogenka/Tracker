@@ -18,9 +18,19 @@ final class NewCategoryView: UIView {
     }
     @available(*, unavailable)
     required init?(coder _: NSCoder) { nil }
+    
     private func setupLayout() {
         [header, nameTextField, doneButton, placeholderView].forEach { addSubview($0) }
         [header, nameTextField, doneButton, placeholderView].forEach { $0.translatesAutoresizingMaskIntoConstraints = false }
+        let doneSafeBottom = doneButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -16)
+        doneSafeBottom.priority = .init(998)
+
+        let doneKeyboardBottom = doneButton.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor, constant: -16)
+        doneKeyboardBottom.priority = .init(999)
+
+        let doneClamp = doneButton.bottomAnchor.constraint(lessThanOrEqualTo: safeAreaLayoutGuide.bottomAnchor, constant: -16)
+        doneClamp.priority = .required
+        
         NSLayoutConstraint.activate([
             header.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
             header.leadingAnchor.constraint(equalTo: leadingAnchor),
@@ -32,8 +42,10 @@ final class NewCategoryView: UIView {
             nameTextField.heightAnchor.constraint(equalToConstant: 75),
             doneButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
             doneButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
-            doneButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -16),
             doneButton.heightAnchor.constraint(equalToConstant: 60),
+            doneSafeBottom,
+            doneKeyboardBottom,
+            doneClamp,
         ])
         placeholderView.configure(
             imageName: "Star",
