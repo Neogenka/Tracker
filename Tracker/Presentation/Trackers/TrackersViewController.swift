@@ -309,14 +309,8 @@ final class TrackersViewController: UIViewController {
         }
     }
     private var uiUpdateWorkItem: DispatchWorkItem?
-    private var lastUIReloadTime: Date?
     private func scheduleUIRefresh() {
         uiUpdateWorkItem?.cancel()
-        let now = Date()
-        if let last = lastUIReloadTime, now.timeIntervalSince(last) < 0.2 {
-            return
-        }
-        lastUIReloadTime = now
         let work = DispatchWorkItem { [weak self] in
             guard let self else { return }
             self.recalculateVisibleCategories()
@@ -324,7 +318,7 @@ final class TrackersViewController: UIViewController {
             self.updatePlaceholder()
         }
         uiUpdateWorkItem = work
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15, execute: work)
+        DispatchQueue.main.async(execute: work)
     }
     @objc private func addButtonTapped() {
         let createVC = CreateTrackerViewController()

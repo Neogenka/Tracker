@@ -107,16 +107,20 @@ extension FiltersViewController: UITableViewDataSource, UITableViewDelegate {
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+
         let previousIndex = viewModel.selectedFilterIndex
         viewModel.selectFilter(index: indexPath.row)
+
         var indexPathsToReload: [IndexPath] = [indexPath]
         if previousIndex != indexPath.row {
             indexPathsToReload.append(IndexPath(row: previousIndex, section: 0))
         }
         tableView.reloadRows(at: indexPathsToReload, with: .automatic)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-            self.onFilterSelected?(indexPath.row)
-            self.dismiss(animated: true)
+
+        let selectedIndex = indexPath.row
+        let handler = onFilterSelected
+        dismiss(animated: true) {
+            handler?(selectedIndex)
         }
     }
 }
