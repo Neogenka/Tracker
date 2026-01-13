@@ -47,7 +47,6 @@ extension TrackersViewController: UICollectionViewDataSource, UICollectionViewDe
         cell.onToggleCompletion = { [weak self] completed in
             guard let self = self else { return }
             self.filtersViewModel.updateSingleTracker(tracker, completed: completed)
-            self.refreshCell(for: tracker)
         }
         contextMenuController?.addInteraction(to: cell)
         return cell

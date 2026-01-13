@@ -93,6 +93,11 @@ final class FiltersViewModel {
             onFilteredTrackersUpdated?()
         }
     }
+    func invalidateCacheAndApply(for date: Date) {
+        lastAppliedDate = nil
+        lastAppliedFilterIndex = nil
+        applyAllFiltersDebounced(for: date)
+    }
     func selectFilter(index: Int) {
         selectedFilterIndex = index
     }

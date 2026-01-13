@@ -151,6 +151,17 @@ private extension TrackerCoreData {
             scheduleArray = (try? JSONDecoder().decode([WeekDay].self, from: data)) ?? []
         } else if let arr = schedule as? [NSNumber] {
             scheduleArray = arr.compactMap { WeekDay(rawValue: $0.intValue) }
+        } else if let arr = schedule as? [Int] {
+            scheduleArray = arr.compactMap { WeekDay(rawValue: $0) }
+        } else if let arr = schedule as? [WeekDay] {
+            scheduleArray = arr
+        } else if let arr = schedule as? [Any] {
+            scheduleArray = arr.compactMap { element in
+                if let day = element as? WeekDay { return day }
+                if let n = element as? NSNumber { return WeekDay(rawValue: n.intValue) }
+                if let i = element as? Int { return WeekDay(rawValue: i) }
+                return nil
+            }
         } else {
             scheduleArray = []
         }

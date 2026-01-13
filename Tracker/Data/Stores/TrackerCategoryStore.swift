@@ -76,7 +76,13 @@ final class TrackerCategoryStore: NSObject {
             cdTracker.name = tracker.name
             cdTracker.color = tracker.color
             cdTracker.emoji = tracker.emoji
-            cdTracker.schedule = tracker.schedule as NSObject
+            do {
+                let data = try JSONEncoder().encode(tracker.schedule)
+                cdTracker.schedule = data as NSData
+            } catch {
+                cdTracker.schedule = nil
+            }
+            cdTracker.category = cdCategory
             var trackersSet = cdCategory.trackers as? Set<TrackerCoreData> ?? []
             trackersSet.insert(cdTracker)
             cdCategory.trackers = trackersSet as NSSet

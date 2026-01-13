@@ -304,8 +304,14 @@ final class TrackersViewController: UIViewController {
                 self.viewModel.unmarkTrackerAsCompleted(tracker, on: self.filtersViewModel.selectedDate)
             }
         }
-        viewModel.onSingleTrackerUpdated = { [weak self] updatedTracker, completed in
-            self?.filtersViewModel.updateTracker(updatedTracker)
+        viewModel.onSingleTrackerUpdated = { [weak self] updatedTracker, _ in
+            guard let self else { return }
+            self.filtersViewModel.invalidateCacheAndApply(for: self.filtersViewModel.selectedDate)
+            self.refreshCell(for: updatedTracker)
+        }
+        viewModel.onTrackersUpdated = { [weak self] in
+            guard let self else { return }
+            self.filtersViewModel.invalidateCacheAndApply(for: self.filtersViewModel.selectedDate)
         }
     }
     private var uiUpdateWorkItem: DispatchWorkItem?
