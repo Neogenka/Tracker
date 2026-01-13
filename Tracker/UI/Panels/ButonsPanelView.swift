@@ -1,11 +1,9 @@
 import UIKit
 
-final class ButonsPanelView: UIView {
-
-    // MARK: - UI
+final class ButonnsPanelView: UIView {
     let cancelButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Отменить", for: .normal)
+        button.setTitle(NSLocalizedString("cancel_button", comment: "Отмена"), for: .normal)
         button.setTitleColor(AppColors.errorRed, for: .normal)
         button.layer.borderWidth = 1
         button.layer.borderColor = AppColors.errorRed.cgColor
@@ -14,16 +12,24 @@ final class ButonsPanelView: UIView {
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
-
     let createButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Создать", for: .normal)
+        button.setTitle(NSLocalizedString("create_button", comment: "Создать"), for: .normal)
+        button.backgroundColor = UIColor { trait in
+            trait.userInterfaceStyle == .dark
+            ? UIColor.white
+            : AppColors.backgroundBlackButton
+        }
+        button.setTitleColor(UIColor { trait in
+            trait.userInterfaceStyle == .dark
+            ? AppColors.backgroundBlackButton
+            : UIColor.white
+        }, for: .normal)
         button.layer.cornerRadius = AppLayout.cornerRadius
         button.titleLabel?.font = AppFonts.subheadline
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
-
     private lazy var stackView: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [cancelButton, createButton])
         stack.axis = .horizontal
@@ -32,10 +38,7 @@ final class ButonsPanelView: UIView {
         stack.translatesAutoresizingMaskIntoConstraints = false
         return stack
     }()
-
-    // MARK: - Init
     var onCreateTapped: (() -> Void)?
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupLayout()
@@ -43,32 +46,23 @@ final class ButonsPanelView: UIView {
         createButton.addTarget(self, action: #selector(createTapped), for: .touchUpInside)
         setCreateButton(enabled: false)
     }
-    
     @objc private func createTapped() {
         onCreateTapped?()
     }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    // MARK: - Public
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) { nil }
     func setCreateButton(enabled: Bool) {
         createButton.isEnabled = enabled
-        createButton.backgroundColor = enabled ? AppColors.backgroundBlackButton : .systemGray3
-        createButton.setTitleColor(AppColors.textPrimary, for: .normal)
+        createButton.alpha = enabled ? 1.0 : 0.5
     }
-
-    // MARK: - Layout
     private func setupLayout() {
         addSubview(stackView)
-
         NSLayoutConstraint.activate([
             stackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: UIConstants.horizontalPadding),
             stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -UIConstants.horizontalPadding),
             stackView.topAnchor.constraint(equalTo: topAnchor),
             stackView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
-            stackView.heightAnchor.constraint(equalToConstant: 60)
+            stackView.heightAnchor.constraint(equalToConstant: 60),
         ])
     }
 }
