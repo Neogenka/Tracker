@@ -27,7 +27,7 @@ final class TrackersDateFilter {
         searchText: String,
         completionChecker: (Tracker, Date) -> Bool
     ) -> [Tracker] {
-        let normalized = calendar.startOfDay(for: currentDate)
+        let normalized = currentDate.startOfDayUTC()
         let text = searchText.lowercased()
         let searchFiltered = trackers.filter { text.isEmpty || $0.name.lowercased().contains(text) }
         var result: [Tracker]

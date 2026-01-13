@@ -42,6 +42,7 @@ final class TrackersViewController: UIViewController {
         setupPlaceholder()
         setupCalendarContainer()
         setupBindings()
+        restoreFilterState()
         updateDateText()
         setupContextMenuController()
         setupSearchBar()
@@ -83,6 +84,17 @@ final class TrackersViewController: UIViewController {
         )
         ui.collectionView.dataSource = self
         ui.collectionView.delegate = self
+    }
+    private func restoreFilterState() {
+        let savedIndex = UserDefaults.standard.integer(forKey: "selectedFilterIndex")
+        filtersViewModel.selectedFilterIndex = savedIndex
+
+        if savedIndex == 1 {
+            showTodayTrackers()
+        } else {
+            filtersViewModel.selectedDate = viewModel.currentDate
+            filtersViewModel.applyAllFilters(for: viewModel.currentDate)
+        }
     }
     private func setupNavigationBarButtons() {
         ui.addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
@@ -144,10 +156,12 @@ final class TrackersViewController: UIViewController {
         updatePlaceholder()
     }
     func updatePlaceholder() {
-        let hasTrackers = !filtersViewModel.filteredTrackers.isEmpty
-        ui.placeholderView.isHidden = hasTrackers
-        ui.collectionView.isHidden = !hasTrackers
-        ui.filtersButton.isHidden = !hasTrackers
+        let hasAnyTrackers = !viewModel.trackers.isEmpty
+        let hasVisibleTrackers = !filtersViewModel.filteredTrackers.isEmpty
+
+        ui.placeholderView.isHidden = hasVisibleTrackers
+        ui.collectionView.isHidden = !hasVisibleTrackers
+        ui.filtersButton.isHidden = !hasAnyTrackers
     }
     func updateDateText() {
         let df = DateFormatter()
@@ -343,6 +357,8 @@ final class TrackersViewController: UIViewController {
                 self.showTodayTrackers()
             } else {
                 self.filtersViewModel.selectFilter(index: index)
+                self.filtersViewModel.applyAllFilters(for: self.viewModel.currentDate)
+                self.scheduleUIRefresh()
             }
         }
         presentFullScreenSheet(filtersVC)
@@ -452,14 +468,10 @@ extension TrackersViewController {
 }
 extension TrackersViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        let filtered = viewModel.searchTrackers(by: searchText)
-        visibleCategories = viewModel.categories.filter { category in
-            filtered.contains { $0.trackerCategory?.title == category.title }
-        }
-        ui.collectionView.reloadData()
-        let hasTrackers = !filtered.isEmpty
-        ui.placeholderView.isHidden = hasTrackers
-        ui.collectionView.isHidden = !hasTrackers
-        ui.filtersButton.isHidden = !hasTrackers
+        filtersViewModel.searchText = searchText
+    }
+
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
     }
 }

@@ -9,11 +9,15 @@ import Combine
 import Foundation
 
 final class FiltersViewModel {
-    @Published private(set) var filteredTrackers: [Tracker] = []
+    private enum StorageKeys {
+        static let selectedFilterIndex = "selectedFilterIndex"
+    }
     @Published var selectedFilterIndex: Int = 0 {
         didSet {
+            UserDefaults.standard.set(selectedFilterIndex, forKey: StorageKeys.selectedFilterIndex)
         }
     }
+    @Published private(set) var filteredTrackers: [Tracker] = []
     @Published var selectedDate: Date = .init()
     @Published var searchText: String = ""
     var selectedCategory: TrackerCategory?
@@ -28,16 +32,17 @@ final class FiltersViewModel {
     private var lastAppliedDate: Date?
     private var lastAppliedFilterIndex: Int?
     private var applyFiltersWorkItem: DispatchWorkItem?
-    init(
-        trackersProvider: @escaping () -> [Tracker],
-        isCompletedProvider: @escaping (Tracker, Date) -> Bool,
-        dateFilter: TrackersDateFilter
-    ) {
+    
+    init(trackersProvider: @escaping () -> [Tracker],
+         isCompletedProvider: @escaping (Tracker, Date) -> Bool,
+         dateFilter: TrackersDateFilter) {
         self.trackersProvider = trackersProvider
         self.isCompletedProvider = isCompletedProvider
         self.dateFilter = dateFilter
+        self.selectedFilterIndex = UserDefaults.standard.integer(forKey: StorageKeys.selectedFilterIndex)
         setupFilteringPipeline()
     }
+    
     private func setupFilteringPipeline() {
         Publishers.CombineLatest3($selectedDate, $selectedFilterIndex, $searchText)
             .debounce(for: .milliseconds(150), scheduler: DispatchQueue.main)
@@ -69,26 +74,24 @@ final class FiltersViewModel {
         applyAllFilters(for: date)
     }
     func applyAllFilters(for date: Date) {
-        guard !isApplyingFilters else {
-            return
-        }
+        guard !isApplyingFilters else { return }
         isApplyingFilters = true
         defer { isApplyingFilters = false }
+
         var trackers = trackersProvider()
         trackers = dateFilter.filterTrackersByDay(trackers, date: date)
-        if selectedFilterIndex != 0 {
-            trackers = dateFilter.filterTrackersByIndex(
-                trackers,
-                selectedFilterIndex: selectedFilterIndex,
-                currentDate: date,
-                searchText: searchText,
-                completionChecker: isCompletedProvider
-            )
-        } else {}
+        trackers = dateFilter.filterTrackersByIndex(
+            trackers,
+            selectedFilterIndex: selectedFilterIndex,
+            currentDate: date,
+            searchText: searchText,
+            completionChecker: isCompletedProvider
+        )
+
         if trackers.map({ $0.id }) != filteredTrackers.map({ $0.id }) {
             filteredTrackers = trackers
             onFilteredTrackersUpdated?()
-        } else {}
+        }
     }
     func selectFilter(index: Int) {
         selectedFilterIndex = index
