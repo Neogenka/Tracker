@@ -22,6 +22,7 @@ final class TrackersViewModel {
     var onDateChanged: ((Date) -> Void)?
     var onEditTracker: ((Tracker) -> Void)?
     var onSingleTrackerUpdated: ((Tracker, Bool) -> Void)?
+    var onRecordsUpdated: (() -> Void)?
     var lastUpdatedTrackerID: UUID?
     convenience init(container: NSPersistentContainer = CoreDataStack.shared.persistentContainer) {
         let categoryStore = TrackerCategoryStore(context: container.viewContext)
@@ -89,7 +90,6 @@ final class TrackersViewModel {
             AppLogger.trackers.info("[VM] Notifying FiltersVM about updated tracker: \(updated.name)")
             onSingleTrackerUpdated?(updated, true)
         }
-        scheduleTrackersUpdate()
         completion?()
     }
     func unmarkTrackerAsCompleted(_ tracker: Tracker, on date: Date, completion: (() -> Void)? = nil) {
@@ -105,7 +105,6 @@ final class TrackersViewModel {
             AppLogger.trackers.info("[VM] Notifying FiltersVM about updated tracker: \(updated.name)")
             onSingleTrackerUpdated?(updated, false)
         }
-        scheduleTrackersUpdate()
         completion?()
     }
     func isTrackerCompleted(_ tracker: Tracker, on date: Date) -> Bool {
@@ -186,7 +185,9 @@ extension TrackersViewModel: TrackerCategoryStoreDelegate {
 extension TrackersViewModel: TrackerRecordStoreDelegate {
     func didUpdateRecords() {
         completedTrackers = recordStore.completedTrackers
-        scheduleTrackersUpdate()
+        DispatchQueue.main.async { [weak self] in
+            self?.onRecordsUpdated?()
+        }
     }
 }
 extension Date {

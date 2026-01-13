@@ -59,19 +59,10 @@ final class FiltersViewModel {
     func applyAllFiltersDebounced(for date: Date) {
         applyFiltersWorkItem?.cancel()
         let workItem = DispatchWorkItem { [weak self] in
-            self?.applyAllFiltersOnce(for: date)
+            self?.applyAllFilters(for: date)
         }
         applyFiltersWorkItem = workItem
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05, execute: workItem)
-    }
-    private func applyAllFiltersOnce(for date: Date) {
-        if lastAppliedDate == date && lastAppliedFilterIndex == selectedFilterIndex {
-            
-            return
-        }
-        lastAppliedDate = date
-        lastAppliedFilterIndex = selectedFilterIndex
-        applyAllFilters(for: date)
     }
     func applyAllFilters(for date: Date) {
         guard !isApplyingFilters else { return }
@@ -94,8 +85,6 @@ final class FiltersViewModel {
         }
     }
     func invalidateCacheAndApply(for date: Date) {
-        lastAppliedDate = nil
-        lastAppliedFilterIndex = nil
         applyAllFiltersDebounced(for: date)
     }
     func selectFilter(index: Int) {
