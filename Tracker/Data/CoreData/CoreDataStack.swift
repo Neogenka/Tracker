@@ -9,8 +9,13 @@ final class CoreDataStack {
     
     // MARK: - Persistent Container
     lazy var persistentContainer: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: "Tracker") // имя = .xcdatamodeld
-        
+        let container = NSPersistentContainer(name: "Tracker")
+
+        if let description = container.persistentStoreDescriptions.first {
+            description.shouldMigrateStoreAutomatically = true
+            description.shouldInferMappingModelAutomatically = true
+        }
+
         container.loadPersistentStores { description, error in
             if let error = error as NSError? {
                 fatalError("❌ Ошибка загрузки Persistent Store: \(error), \(error.userInfo)")
